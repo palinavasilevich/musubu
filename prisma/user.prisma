@@ -1,0 +1,16 @@
+model User {
+    id       String  @id @default(cuid())
+    email    String  @unique
+    password String
+    username String?
+    avatar   String?
+
+    projects Project[]
+    likes    Like[]
+    comments Comment[]
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("users")
+}

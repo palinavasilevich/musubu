@@ -1,0 +1,40 @@
+model Project {
+    id          String  @id @default(cuid())
+    title       String
+    description String
+    views       Int     @default(0)
+    image       String?
+
+    difficulty Difficulty
+    status     ProjectStatus
+
+    authorId String @map("author_id")
+    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+    projectMaterials ProjectMaterial[]
+    instructions     Instruction[]
+
+    likes    Like[]
+    comments Comment[]
+
+    isPublic Boolean @default(false) @map("is_public")
+
+    createdAt DateTime   @default(now()) @map("created_at")
+    updatedAt DateTime   @updatedAt @map("updated_at")
+    materials Material[]
+
+    @@index([authorId, views(sort: Desc)])
+    @@map("projects")
+}
+
+enum Difficulty {
+    BEGINNER
+    INTERMEDIATE
+    ADVANCED
+}
+
+enum ProjectStatus {
+    PLANNED
+    IN_PROGRESS
+    COMPLETED
+}

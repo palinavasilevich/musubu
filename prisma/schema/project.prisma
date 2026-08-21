@@ -34,7 +34,6 @@ enum Difficulty {
 }
 
 enum ProjectStatus {
-    PLANNED
-    IN_PROGRESS
-    COMPLETED
+  DRAFT
+  PUBLISHED
 }

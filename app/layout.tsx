@@ -3,6 +3,7 @@ import { Fredoka, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Header } from "@/components/layout/header/header";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -33,7 +34,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         geistMono.variable,
       )}
     >
-      <body className="min-h-full flex flex-col font-fredoka">{children}</body>
+      <body className="min-h-full flex flex-col font-fredoka">
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }

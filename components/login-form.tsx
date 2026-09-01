@@ -11,16 +11,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+} from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
-import { useState } from "react";
+import { useActionState, useState } from "react";
+import { loginAction, LoginActionState } from "@/app/login/actions";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [state, formAction] = useActionState<LoginActionState | null, FormData>(
+    loginAction,
+    null,
+  );
+
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -41,12 +52,20 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form action={formAction} noValidate>
             <FieldGroup className="text-base">
               <Field>
-                <InputGroup className="px-1 rounded-2xl h-12 border-border/50 text-base">
+                <InputGroup
+                  className={cn(
+                    "px-1 h-12 rounded-2xl border-border/50 text-base",
+                    state?.errors?.email &&
+                      "border-destructive ring-1 ring-destructive/20",
+                  )}
+                  aria-invalid={!!state?.errors?.email}
+                >
                   <InputGroupInput
                     id="email"
+                    name="email"
                     type="email"
                     placeholder="m@example.com"
                     required
@@ -55,15 +74,28 @@ export function LoginForm({
                     <MailIcon className="text-muted-foreground" size={18} />
                   </InputGroupAddon>
                 </InputGroup>
+
+                {state?.errors?.email && (
+                  <FieldError className="text-center">
+                    {state.errors.email}
+                  </FieldError>
+                )}
               </Field>
 
               <Field>
-                <InputGroup className="px-1 rounded-2xl h-12 border-border/50 text-base">
+                <InputGroup
+                  className={cn(
+                    "px-1 h-12 rounded-2xl border-border/50 text-base",
+                    state?.errors?.password &&
+                      "border-destructive ring-1 ring-destructive/20",
+                  )}
+                  aria-invalid={!!state?.errors?.password}
+                >
                   <InputGroupInput
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
-                    required
                   />
 
                   <InputGroupAddon align="inline-start">
@@ -74,7 +106,7 @@ export function LoginForm({
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-muted-foreground transition-colors hover:text-foreground"
                       aria-label={
                         showPassword ? "Hide password" : "Show password"
                       }
@@ -87,9 +119,21 @@ export function LoginForm({
                     </button>
                   </InputGroupAddon>
                 </InputGroup>
+
+                {state?.errors?.password && (
+                  <FieldError className="text-center">
+                    {state.errors.password}
+                  </FieldError>
+                )}
               </Field>
 
               <Field>
+                {state?.apiError && (
+                  <FieldError className="text-center">
+                    {state.apiError}
+                  </FieldError>
+                )}
+
                 <Button
                   type="submit"
                   className="w-full rounded-2xl h-12 btn-squish"

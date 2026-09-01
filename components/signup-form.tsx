@@ -30,7 +30,7 @@ import {
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 
 import { ROUTES } from "@/shared/constants/routes";
-import { signupAction, SignupActionState } from "@/app/signup/action";
+import { signupAction, SignupActionState } from "@/app/signup/actions";
 
 export function SignupForm({
   className,

@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/db";
 import { ROUTES } from "@/shared/constants/routes";
+import { AuthError } from "next-auth";
 
 const signupSchema = z
   .object({
@@ -89,12 +90,15 @@ export async function signupAction(
         password: hashedPassword,
       },
     });
+
+    redirect(ROUTES.LOGIN);
   } catch (error) {
     console.error("Signup error:", error);
-    return {
-      apiError: "Something went wrong. Please try again.",
-    };
+    if (error instanceof AuthError) {
+      return {
+        apiError: "Account created but login failed. Please try again later.",
+      };
+    }
+    throw error;
   }
-
-  redirect(ROUTES.LOGIN);
 }

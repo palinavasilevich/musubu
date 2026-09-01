@@ -34,9 +34,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         geistMono.variable,
       )}
     >
-      <body className="min-h-full flex flex-col font-fredoka">
+      <body className="min-h-screen font-fredoka">
         <Header />
-        {children}
+
+        <main className="flex min-h-screen items-start justify-center px-4 pt-20 pb-10">
+          {children}
+        </main>
       </body>
     </html>
   );

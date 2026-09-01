@@ -19,7 +19,7 @@ async function main() {
     data: {
       email: "palina@example.com",
       password: "password123",
-      username: "palina",
+      name: "palina",
       avatar: null,
     },
   });
@@ -28,7 +28,7 @@ async function main() {
     data: {
       email: "anna@example.com",
       password: "password123",
-      username: "anna",
+      name: "anna",
       avatar: null,
     },
   });

@@ -30,7 +30,7 @@ export function LoginForm({
           <CardTitle className="font-display text-3xl font-bold mb-2 flex items-center justify-center gap-2">
             <span>Welcome Back!</span>
             <Image
-              src="/images/yarn.svg"
+              src="/images/cat.svg"
               alt="Yarn Icon"
               width={25}
               height={25}

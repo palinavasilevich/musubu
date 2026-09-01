@@ -1,6 +1,5 @@
-import Link from "next/link";
 import Image from "next/image";
-
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,19 +11,19 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-import { LockIcon, MailIcon, UserIcon } from "lucide-react";
+import { LockIcon, MailIcon } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
 
-export function SignupForm({
+export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="shadow-soft ring-0">
-        <CardHeader className="text-center">
+        <CardHeader>
           <CardTitle className="font-display text-3xl font-bold mb-2 flex items-center justify-center gap-2">
-            <span>Join the MUSUBU!</span>
+            <span>Welcome Back!</span>
             <Image
               src="/images/yarn.svg"
               alt="Yarn Icon"
@@ -33,20 +32,12 @@ export function SignupForm({
             />
           </CardTitle>
           <CardDescription className="font-normal text-center">
-            Create an account to connect and share
+            Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form>
             <FieldGroup className="text-base">
-              <Field>
-                <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
-                  <InputGroupInput id="name" placeholder="Your name" required />
-                  <InputGroupAddon align="inline-start">
-                    <UserIcon className="text-muted-foreground" size={18} />
-                  </InputGroupAddon>
-                </InputGroup>
-              </Field>
               <Field>
                 <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
                   <InputGroupInput
@@ -74,35 +65,22 @@ export function SignupForm({
                   </InputGroupAddon>
                 </InputGroup>
               </Field>
-              <Field>
-                <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
-                  <InputGroupInput
-                    id="confirm-password"
-                    type="password"
-                    placeholder="Confirm your password"
-                    required
-                  />
-                  <InputGroupAddon align="inline-start">
-                    <LockIcon className="text-muted-foreground" size={18} />
-                  </InputGroupAddon>
-                </InputGroup>
-              </Field>
 
               <Field>
                 <Button
                   type="submit"
                   className="w-full rounded-2xl h-12 btn-squish"
                 >
-                  Create Account
+                  Sign In
                 </Button>
 
                 <FieldDescription className="px-6 text-center">
-                  Already have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
-                    href={ROUTES.LOGIN}
+                    href={ROUTES.SIGNUP}
                     className="text-primary font-medium no-underline! hover:underline!"
                   >
-                    Sign In
+                    Sign Up
                   </Link>
                 </FieldDescription>
               </Field>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -12,13 +15,23 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-import { LockIcon, MailIcon, UserIcon } from "lucide-react";
+import {
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+  ShieldCheckIcon,
+  UserIcon,
+} from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="shadow-soft ring-0">
@@ -40,7 +53,7 @@ export function SignupForm({
           <form>
             <FieldGroup className="text-base">
               <Field>
-                <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
+                <InputGroup className="px-1 rounded-2xl h-12 border-border/50 text-base">
                   <InputGroupInput id="name" placeholder="Your name" required />
                   <InputGroupAddon align="inline-start">
                     <UserIcon className="text-muted-foreground" size={18} />
@@ -48,7 +61,7 @@ export function SignupForm({
                 </InputGroup>
               </Field>
               <Field>
-                <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
+                <InputGroup className="px-1 rounded-2xl h-12 border-border/50 text-base">
                   <InputGroupInput
                     id="email"
                     type="email"
@@ -62,28 +75,67 @@ export function SignupForm({
               </Field>
 
               <Field>
-                <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
+                <InputGroup className="px-1 rounded-2xl h-12 border-border/50 text-base">
                   <InputGroupInput
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     required
                   />
+
                   <InputGroupAddon align="inline-start">
                     <LockIcon className="text-muted-foreground" size={18} />
+                  </InputGroupAddon>
+
+                  <InputGroupAddon align="inline-end">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOffIcon size={18} />
+                      ) : (
+                        <EyeIcon size={18} />
+                      )}
+                    </button>
                   </InputGroupAddon>
                 </InputGroup>
               </Field>
               <Field>
-                <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
+                <InputGroup className="px-1 rounded-2xl h-12 border-border/50 text-base">
                   <InputGroupInput
                     id="confirm-password"
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
                     required
                   />
+
                   <InputGroupAddon align="inline-start">
-                    <LockIcon className="text-muted-foreground" size={18} />
+                    <ShieldCheckIcon
+                      className="text-muted-foreground"
+                      size={18}
+                    />
+                  </InputGroupAddon>
+
+                  <InputGroupAddon align="inline-end">
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={
+                        showConfirmPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOffIcon size={18} />
+                      ) : (
+                        <EyeIcon size={18} />
+                      )}
+                    </button>
                   </InputGroupAddon>
                 </InputGroup>
               </Field>

@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -11,13 +13,16 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-import { LockIcon, MailIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
+import { useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="shadow-soft ring-0">
@@ -39,7 +44,7 @@ export function LoginForm({
           <form>
             <FieldGroup className="text-base">
               <Field>
-                <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
+                <InputGroup className="px-1 rounded-2xl h-12 border-border/50 text-base">
                   <InputGroupInput
                     id="email"
                     type="email"
@@ -53,15 +58,33 @@ export function LoginForm({
               </Field>
 
               <Field>
-                <InputGroup className="rounded-2xl h-12 border-border/50 text-base">
+                <InputGroup className="px-1 rounded-2xl h-12 border-border/50 text-base">
                   <InputGroupInput
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     required
                   />
+
                   <InputGroupAddon align="inline-start">
                     <LockIcon className="text-muted-foreground" size={18} />
+                  </InputGroupAddon>
+
+                  <InputGroupAddon align="inline-end">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOffIcon size={18} />
+                      ) : (
+                        <EyeIcon size={18} />
+                      )}
+                    </button>
                   </InputGroupAddon>
                 </InputGroup>
               </Field>

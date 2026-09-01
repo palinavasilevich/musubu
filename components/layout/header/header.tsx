@@ -5,10 +5,11 @@ import { User } from "@/prisma/generated/client";
 import Image from "next/image";
 
 export function Header() {
-  const user: Pick<User, "email" | "username"> | null = {
-    email: "user@example.com",
-    username: "user",
-  };
+  const user: Pick<User, "email" | "username"> | null = null;
+  // {
+  //   email: "user@example.com",
+  //   username: "user",
+  // };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">

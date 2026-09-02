@@ -3,7 +3,6 @@ import { Fredoka, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Header } from "@/components/layout/header/header";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -33,13 +32,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         fredoka.variable,
         geistMono.variable,
       )}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen font-fredoka">
-        <Header />
+      <body className="min-h-screen font-fredoka" suppressHydrationWarning>
+        {children}
 
+        {/* 
         <main className="flex min-h-screen items-start justify-center px-4 pt-20 pb-10">
-          {children}
-        </main>
+       
+        </main> */}
       </body>
     </html>
   );

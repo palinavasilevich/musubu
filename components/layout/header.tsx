@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { ROUTES } from "@/shared/constants/routes";
-import { Heart, LogOut, Search, UserIcon } from "lucide-react";
-import { User } from "@/prisma/generated/client";
+import { Heart, Search, UserIcon } from "lucide-react";
+
 import Image from "next/image";
+import { User as AuthUser } from "next-auth";
+import { LogoutButton } from "./logout-button";
 
-export function Header() {
-  const user: Pick<User, "email" | "username"> | null = null;
-  // {
-  //   email: "user@example.com",
-  //   username: "user",
-  // };
+interface HeaderProps {
+  user?: AuthUser | null;
+}
 
+export function Header({ user }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
       <div className="mx-4 mt-4">
@@ -38,13 +38,15 @@ export function Header() {
                 <Search size={20} />
               </Link>
 
-              <Link
-                href={ROUTES.LIKES}
-                aria-label="Liked projects"
-                className="relative hidden rounded-2xl p-2 text-foreground/60 transition-all hover:bg-primary/30 hover:text-foreground btn-squish sm:flex"
-              >
-                <Heart size={20} />
-              </Link>
+              {user && (
+                <Link
+                  href={ROUTES.LIKES}
+                  aria-label="Liked projects"
+                  className="relative hidden rounded-2xl p-2 text-foreground/60 transition-all hover:bg-primary/30 hover:text-foreground btn-squish sm:flex"
+                >
+                  <Heart size={20} />
+                </Link>
+              )}
 
               {user ? (
                 <>
@@ -54,16 +56,10 @@ export function Header() {
                   >
                     <UserIcon size={16} />
 
-                    {user.username ?? user.email}
+                    {user.name ?? user.email}
                   </Link>
 
-                  <button
-                    type="button"
-                    aria-label="Logout"
-                    className="hidden rounded-2xl p-2 text-foreground/60 transition-all hover:text-destructive btn-squish sm:flex"
-                  >
-                    <LogOut size={18} />
-                  </button>
+                  <LogoutButton />
                 </>
               ) : (
                 <Link

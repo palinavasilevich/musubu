@@ -21,7 +21,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
 import { useActionState, useState } from "react";
-import { loginAction, LoginActionState } from "@/app/login/actions";
+import { loginAction, LoginActionState } from "@/app/(auth)/login/actions";
 
 export function LoginForm({
   className,

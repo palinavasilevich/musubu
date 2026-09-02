@@ -9,7 +9,7 @@ export function LogoutButton() {
     <button
       type="button"
       aria-label="Logout"
-      onClick={() => signOut({ callbackUrl: ROUTES.HOME })}
+      onClick={() => signOut({ redirectTo: ROUTES.HOME })}
       className="hidden rounded-2xl p-2 text-foreground/60 transition-all hover:text-destructive btn-squish sm:flex"
     >
       <LogOut size={18} />

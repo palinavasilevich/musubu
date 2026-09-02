@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ROUTES } from "@/shared/constants/routes";
 import { Heart, Search, UserIcon } from "lucide-react";
-
 import Image from "next/image";
 import { User as AuthUser } from "next-auth";
 import { LogoutButton } from "./logout-button";

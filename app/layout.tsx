@@ -36,11 +36,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-screen font-fredoka" suppressHydrationWarning>
         {children}
-
-        {/* 
-        <main className="flex min-h-screen items-start justify-center px-4 pt-20 pb-10">
-       
-        </main> */}
       </body>
     </html>
   );

@@ -24,7 +24,7 @@ export async function Hero() {
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
-          href={ROUTES.SEARCH}
+          href={ROUTES.PROJECTS}
           className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold text-base shadow-glow hover:shadow-float transition-all btn-squish"
         >
           Explore projects <ArrowRight size={18} />

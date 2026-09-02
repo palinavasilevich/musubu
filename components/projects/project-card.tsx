@@ -6,7 +6,7 @@ import { ROUTES } from "@/shared/constants/routes";
 export interface ProjectCardProps {
   id: string;
   title: string;
-  image: string;
+  image: string | null;
   author: {
     username: string;
     avatar?: string | null;
@@ -23,16 +23,20 @@ export function ProjectCard({
 }: ProjectCardProps) {
   return (
     <article className="group overflow-hidden rounded-3xl bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-      <Link href={`${ROUTES.PROJECTS}/${id}`}>
-        {/* <div className="relative aspect-square overflow-hidden"> */}
+      <Link href={ROUTES.PROJECT(id)}>
         <div className="relative aspect-4/3 overflow-hidden">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-
+          {image ? (
+            <Image
+              src={image}
+              alt={title}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-muted text-muted-foreground">
+              No image
+            </div>
+          )}
           <div className="absolute right-3 top-3 rounded-2xl bg-background/80 p-2 backdrop-blur-sm">
             <Heart className="size-5 text-foreground/70" />
           </div>

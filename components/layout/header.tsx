@@ -29,22 +29,24 @@ export function Header({ user }: HeaderProps) {
             </Link>
 
             <div className="flex items-center gap-2">
-              <Link
-                href={ROUTES.SEARCH}
-                aria-label="Search"
-                className="hidden rounded-2xl p-2 text-foreground/60 transition-all hover:bg-primary/30 hover:text-foreground btn-squish sm:flex"
-              >
-                <Search size={20} />
-              </Link>
-
               {user && (
-                <Link
-                  href={ROUTES.LIKES}
-                  aria-label="Liked projects"
-                  className="relative hidden rounded-2xl p-2 text-foreground/60 transition-all hover:bg-primary/30 hover:text-foreground btn-squish sm:flex"
-                >
-                  <Heart size={20} />
-                </Link>
+                <>
+                  <Link
+                    href={ROUTES.PROJECTS}
+                    aria-label="Search"
+                    className="hidden rounded-2xl p-2 text-foreground/60 transition-all hover:bg-primary/30 hover:text-foreground btn-squish sm:flex"
+                  >
+                    <Search size={20} />
+                  </Link>
+
+                  <Link
+                    href={ROUTES.LIKES}
+                    aria-label="Liked projects"
+                    className="relative hidden rounded-2xl p-2 text-foreground/60 transition-all hover:bg-primary/30 hover:text-foreground btn-squish sm:flex"
+                  >
+                    <Heart size={20} />
+                  </Link>
+                </>
               )}
 
               {user ? (

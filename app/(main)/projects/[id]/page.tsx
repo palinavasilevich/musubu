@@ -21,11 +21,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     },
     include: {
       author: true,
-      _count: {
-        select: {
-          likes: true,
-        },
-      },
       projectMaterials: {
         include: {
           material: true,
@@ -34,6 +29,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       instructions: {
         orderBy: {
           order: "asc",
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
         },
       },
     },

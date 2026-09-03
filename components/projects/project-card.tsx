@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Clock3, Heart } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
 import { ProjectCardProps } from "@/shared/types/project";
+import { formatExpectedTime } from "@/lib/formatTime";
 
 export function ProjectCard({
   id,
@@ -10,6 +11,7 @@ export function ProjectCard({
   image,
   author,
   likes,
+  expectedTime,
 }: ProjectCardProps) {
   return (
     <article className="group overflow-hidden rounded-3xl bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
@@ -41,11 +43,18 @@ export function ProjectCard({
             <span className="truncate text-sm text-muted-foreground">
               @{author.name ?? "Unknown"}
             </span>
-
-            <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
-              <Heart className="size-4" />
-              {likes}
-            </span>
+            <p className="flex items-center gap-3">
+              {expectedTime && (
+                <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
+                  <Clock3 className="size-4" /> 1h
+                  {formatExpectedTime(expectedTime)}
+                </span>
+              )}
+              <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
+                <Heart className="size-4" />
+                {likes}
+              </span>
+            </p>
           </div>
         </div>
       </Link>

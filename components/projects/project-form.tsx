@@ -115,6 +115,28 @@ export function ProjectForm() {
             </Field>
 
             <Field>
+              <FieldLabel htmlFor="expectedTime">Expected time</FieldLabel>
+
+              <Input
+                id="expectedTime"
+                name="expectedTime"
+                type="number"
+                min="1"
+                placeholder="e.g. 180"
+                className="h-12 rounded-2xl border-border/50"
+                aria-invalid={!!state?.errors?.expectedTime}
+              />
+
+              <FieldDescription>
+                Estimated time needed to complete the project, in minutes.
+              </FieldDescription>
+
+              {state?.errors?.expectedTime && (
+                <FieldError>{state.errors.expectedTime}</FieldError>
+              )}
+            </Field>
+
+            <Field>
               <FieldLabel htmlFor="image">Image</FieldLabel>
 
               <Input

@@ -6,8 +6,9 @@ model Project {
     views Int     @default(0)
     image String?
 
-    difficulty Difficulty
-    status     ProjectStatus
+    difficulty   Difficulty
+    status       ProjectStatus
+    expectedTime Int?          @map("expected_time")
 
     authorId String @map("author_id")
     author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -20,8 +21,8 @@ model Project {
 
     isPublic Boolean @default(false) @map("is_public")
 
-    createdAt DateTime   @default(now()) @map("created_at")
-    updatedAt DateTime   @updatedAt @map("updated_at")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
     @@index([authorId, views(sort: Desc)])
     @@map("projects")

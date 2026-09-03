@@ -23,6 +23,7 @@ const createProjectSchema = z.object({
     .max(2000, "Description is too long"),
 
   difficulty: z.enum(Difficulty),
+  expectedTime: z.number().int().positive().optional(),
 
   image: z.string().optional(),
 
@@ -36,6 +37,7 @@ export type CreateProjectActionState = {
     title?: string;
     description?: string;
     difficulty?: string;
+    expectedTime?: string;
     image?: string;
     status?: string;
     isPublic?: string;
@@ -59,6 +61,7 @@ export async function createProject(
     const data = {
       title: formData.get("title"),
       description: formData.get("description"),
+      expectedTime: formData.get("expectedTime"),
       difficulty: formData.get("difficulty"),
       image: formData.get("image") || undefined,
       status: formData.get("status"),
@@ -84,6 +87,7 @@ export async function createProject(
         data: {
           title: result.data.title,
           description: result.data.description,
+          expectedTime: result.data.expectedTime ?? null,
           difficulty: result.data.difficulty,
           image: result.data.image ?? null,
           status: result.data.status,

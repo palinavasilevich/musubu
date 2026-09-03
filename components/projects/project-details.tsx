@@ -1,13 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { ArrowLeft, Eye, Heart } from "lucide-react";
+import { ArrowLeft, Clock3, Eye, Heart } from "lucide-react";
 
 import { Difficulty } from "@/prisma/generated/client";
 
 import { ROUTES } from "@/shared/constants/routes";
 
 import type { Project, Prisma } from "@/prisma/generated/client";
+import { formatExpectedTime } from "@/lib/formatTime";
 
 type ProjectWithDetails = Prisma.ProjectGetPayload<{
   include: {
@@ -85,6 +86,13 @@ export function ProjectDetails({
                 <Eye className="size-4" />
                 {project.views}
               </span>
+
+              {project.expectedTime && (
+                <span className="flex items-center gap-1.5">
+                  <Clock3 className="size-4" />
+                  {formatExpectedTime(project.expectedTime)}
+                </span>
+              )}
             </div>
           </div>
 

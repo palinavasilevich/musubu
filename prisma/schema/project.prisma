@@ -1,9 +1,10 @@
 model Project {
-    id          String  @id @default(cuid())
+    id          String @id @default(cuid())
     title       String
     description String
-    views       Int     @default(0)
-    image       String?
+
+    views Int     @default(0)
+    image String?
 
     difficulty Difficulty
     status     ProjectStatus
@@ -21,7 +22,6 @@ model Project {
 
     createdAt DateTime   @default(now()) @map("created_at")
     updatedAt DateTime   @updatedAt @map("updated_at")
-    materials Material[]
 
     @@index([authorId, views(sort: Desc)])
     @@map("projects")
@@ -34,6 +34,6 @@ enum Difficulty {
 }
 
 enum ProjectStatus {
-  DRAFT
-  PUBLISHED
+    DRAFT
+    PUBLISHED
 }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Eye, Heart } from "lucide-react";
 
 import { ROUTES } from "@/shared/constants/routes";
-import type { Project } from "@/shared/types/project";
+import { Project } from "@/prisma/generated/client";
 
 interface ProjectDetailsProps {
   project: Project;

@@ -12,5 +12,6 @@ export const ROUTES = {
 
   PROJECTS: "/projects",
   PROJECT: (id: string) => `/projects/${id}`,
+  NEW_PROJECT: "/projects/new",
   EDIT_PROJECT: (id: string) => `/projects/${id}/edit`,
 } as const;

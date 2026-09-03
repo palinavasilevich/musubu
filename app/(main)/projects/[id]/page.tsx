@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { ProjectDetails } from "@/components/projects/project-details";
 import { projects } from "@/shared/mocks/projects";
+import { prisma } from "@/lib/db";
 
 interface ProjectPageProps {
   params: Promise<{
@@ -12,9 +13,24 @@ interface ProjectPageProps {
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { id } = await params;
 
-  const project = projects.find((project) => project.id === id);
-
-  console.log(project);
+  const project = await prisma.project.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      author: true,
+      projectMaterials: {
+        include: {
+          material: true,
+        },
+      },
+      instructions: {
+        orderBy: {
+          order: "asc",
+        },
+      },
+    },
+  });
 
   if (!project) {
     notFound();

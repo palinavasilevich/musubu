@@ -29,8 +29,6 @@ export async function loginAction(
     password: formData.get("password"),
   });
 
-  console.log(parsedFields);
-
   if (!parsedFields.success) {
     return {
       errors: Object.fromEntries(

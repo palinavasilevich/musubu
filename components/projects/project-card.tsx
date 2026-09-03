@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock3, Heart } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
-import { ProjectCardProps } from "@/shared/types/project";
+import { Project } from "@/shared/types/project";
 import { formatExpectedTime } from "@/lib/formatTime";
 
 export function ProjectCard({
@@ -12,7 +12,7 @@ export function ProjectCard({
   author,
   likes,
   expectedTime,
-}: ProjectCardProps) {
+}: Project) {
   return (
     <article className="group overflow-hidden rounded-3xl bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       <Link href={ROUTES.PROJECT(id)}>

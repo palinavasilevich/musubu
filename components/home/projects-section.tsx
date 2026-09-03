@@ -2,12 +2,12 @@ import Link from "next/link";
 
 import { ProjectCard } from "@/components/projects/project-card";
 import { ROUTES } from "@/shared/constants/routes";
-import { ProjectCardProps } from "@/shared/types/project";
+import { Project } from "@/shared/types/project";
 
 interface ProjectsSectionProps {
   title: string;
   description: string;
-  projects: ProjectCardProps[];
+  projects: Project[];
   showViewAll?: boolean;
 }
 

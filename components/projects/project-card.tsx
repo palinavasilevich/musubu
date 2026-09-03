@@ -8,8 +8,8 @@ export interface ProjectCardProps {
   title: string;
   image: string | null;
   author: {
-    username: string;
-    avatar?: string | null;
+    name: string | null;
+    avatar: string | null;
   };
   likes: number;
 }
@@ -49,7 +49,7 @@ export function ProjectCard({
 
           <div className="flex items-center justify-between gap-3">
             <span className="truncate text-sm text-muted-foreground">
-              @{author.username}
+              @{author.name ?? "Unknown"}
             </span>
 
             <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">

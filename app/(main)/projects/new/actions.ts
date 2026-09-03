@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 
 import { Difficulty, ProjectStatus } from "@/prisma/generated/client";
+import { ROUTES } from "@/shared/constants/routes";
 import { redirect } from "next/navigation";
 
 import { z } from "zod";
@@ -76,8 +77,10 @@ export async function createProject(
       };
     }
 
+    let project;
+
     try {
-      const project = await prisma.project.create({
+      project = await prisma.project.create({
         data: {
           title: result.data.title,
           description: result.data.description,
@@ -88,8 +91,6 @@ export async function createProject(
           authorId: session.user.id,
         },
       });
-
-      redirect(`/projects/${project.id}`);
     } catch (error) {
       console.error("Create project error:", error);
 
@@ -97,5 +98,7 @@ export async function createProject(
         apiError: "Something went wrong. Please try again.",
       };
     }
+
+    redirect(ROUTES.PROJECT(project.id));
   }
 }

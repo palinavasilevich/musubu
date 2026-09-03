@@ -5,7 +5,7 @@ export interface ProjectCardProps {
   title: string;
   image: string | null;
   author: {
-    username: string;
+    name: string;
     avatar?: string | null;
   };
   likes: number;

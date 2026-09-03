@@ -31,7 +31,7 @@ export async function Hero() {
         </Link>
 
         <Link
-          href={session?.user ? ROUTES.DASHBOARD : ROUTES.SIGNUP}
+          href={session?.user ? ROUTES.NEW_PROJECT : ROUTES.SIGNUP}
           className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-3xl bg-secondary text-foreground font-display font-semibold text-base shadow-soft hover:shadow-float transition-all btn-squish border border-border/50"
         >
           <Sparkles size={18} />

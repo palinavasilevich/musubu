@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 
-import { ProjectDetails } from "@/components/projects/project-details";
-import { projects } from "@/shared/mocks/projects";
 import { prisma } from "@/lib/db";
+
+import { ProjectDetails } from "@/components/projects/project-details";
+import { auth } from "@/auth";
 
 interface ProjectPageProps {
   params: Promise<{
@@ -12,6 +13,7 @@ interface ProjectPageProps {
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { id } = await params;
+  const session = await auth();
 
   const project = await prisma.project.findUnique({
     where: {
@@ -19,6 +21,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     },
     include: {
       author: true,
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
       projectMaterials: {
         include: {
           material: true,
@@ -36,5 +43,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  return <ProjectDetails project={project} />;
+  return (
+    <ProjectDetails
+      project={project}
+      likes={project._count.likes}
+      currentUserId={session?.user?.id ?? null}
+    />
+  );
 }

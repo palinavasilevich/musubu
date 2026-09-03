@@ -1,202 +1,129 @@
+import { hash } from "bcryptjs";
 import { PrismaClient, Difficulty, ProjectStatus } from "./generated/client";
-
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const databaseUrl = process.env.DATABASE_URL;
+
 if (!databaseUrl) {
   throw new Error("DATABASE_URL is not defined in .env");
 }
 
 const adapter = new PrismaPg({ connectionString: databaseUrl });
-
 const prisma = new PrismaClient({ adapter });
 
+const projects = [
+  {
+    id: "1",
+    title: "Cozy Autumn Sweater",
+    image: "/images/projects/autumn-sweater.webp",
+    authorEmail: "user1@example.com",
+    views: 342,
+    difficulty: Difficulty.BEGINNER,
+    description:
+      "A warm and cozy sweater for chilly autumn days. A simple and comfortable project for anyone who enjoys knitting.",
+    createdAt: new Date("2026-08-28"),
+  },
+  {
+    id: "2",
+    title: "Floral Crochet Bag",
+    image: "/images/projects/crochet-bag.jpg",
+    authorEmail: "user2@example.com",
+    views: 276,
+    difficulty: Difficulty.BEGINNER,
+    description:
+      "A colorful crochet bag with a beautiful floral pattern. A fun project for a relaxing weekend.",
+    createdAt: new Date("2026-08-30"),
+  },
+  {
+    id: "3",
+    title: "Handmade Embroidery",
+    image: "/images/projects/embroidery.webp",
+    authorEmail: "user3@example.com",
+    views: 198,
+    difficulty: Difficulty.INTERMEDIATE,
+    description:
+      "A delicate embroidery project inspired by nature and handmade illustrations.",
+    createdAt: new Date("2026-08-27"),
+  },
+  {
+    id: "4",
+    title: "Soft Lilac Scarf",
+    image: "/images/projects/lilac-scarf.jpg",
+    authorEmail: "user1@example.com",
+    views: 94,
+    difficulty: Difficulty.BEGINNER,
+    description:
+      "A soft and simple lilac scarf that is perfect for cool spring days.",
+    createdAt: new Date("2026-09-01"),
+  },
+  {
+    id: "5",
+    title: "Little Crochet Bunny",
+    image: "/images/projects/crochet-bunny.webp",
+    authorEmail: "user2@example.com",
+    views: 81,
+    difficulty: Difficulty.BEGINNER,
+    description:
+      "A cute little crochet bunny that makes a lovely handmade gift.",
+    createdAt: new Date("2026-08-31"),
+  },
+  {
+    id: "6",
+    title: "Weekend Knitting Project",
+    image: "/images/projects/knitting-project.webp",
+    authorEmail: "user3@example.com",
+    views: 63,
+    difficulty: Difficulty.INTERMEDIATE,
+    description:
+      "A simple weekend knitting project for makers who want to create something cozy.",
+    createdAt: new Date("2026-08-29"),
+  },
+];
+
 async function main() {
-  console.log("🌱 Seeding database...");
+  console.log("🌱 Starting seed...");
 
-  // Users
-  const palina = await prisma.user.create({
-    data: {
-      email: "palina@example.com",
-      password: "password123",
-      name: "palina",
-      avatar: null,
-    },
-  });
-
-  const anna = await prisma.user.create({
-    data: {
-      email: "anna@example.com",
-      password: "password123",
-      name: "anna",
-      avatar: null,
-    },
-  });
-
-  // Materials
-  const cottonYarn = await prisma.material.create({
-    data: {
-      name: "Cotton Yarn",
-      description: "Soft cotton yarn suitable for crochet projects.",
-    },
-  });
-
-  const crochetHook = await prisma.material.create({
-    data: {
-      name: "Crochet Hook 4 mm",
-      description: "4 mm crochet hook for medium-weight yarn.",
-    },
-  });
-
-  const woodenButtons = await prisma.material.create({
-    data: {
-      name: "Wooden Buttons",
-      description: "Natural wooden buttons for handmade projects.",
-    },
-  });
-
-  // Project
-  const summerBag = await prisma.project.create({
-    data: {
-      title: "Crochet Summer Bag",
-      description:
-        "A simple and lightweight crochet bag, perfect for summer days.",
-      difficulty: Difficulty.BEGINNER,
-      status: ProjectStatus.PUBLISHED,
-      isPublic: true,
-      image: null,
-      authorId: palina.id,
-
-      projectMaterials: {
-        create: [
-          {
-            materialId: cottonYarn.id,
-            quantity: 300,
-            unit: "g",
-          },
-          {
-            materialId: crochetHook.id,
-            quantity: 1,
-            unit: "piece",
-          },
-          {
-            materialId: woodenButtons.id,
-            quantity: 2,
-            unit: "pieces",
-          },
-        ],
-      },
-
-      instructions: {
-        create: [
-          {
-            title: "Create the foundation chain",
-            content: "Make a foundation chain of 40 stitches.",
-            order: 1,
-          },
-          {
-            title: "Crochet the body",
-            content:
-              "Work single crochet stitches across the foundation chain.",
-            order: 2,
-          },
-          {
-            title: "Add the handles",
-            content: "Create two handles and attach them securely to the bag.",
-            order: 3,
-          },
-          {
-            title: "Finish the bag",
-            content: "Weave in the loose ends and attach the wooden buttons.",
-            order: 4,
-          },
-        ],
+  await prisma.project.deleteMany({
+    where: {
+      id: {
+        in: projects.map((project) => project.id),
       },
     },
   });
 
-  // Second project
-  const crochetFlower = await prisma.project.create({
-    data: {
-      title: "Simple Crochet Flower",
-      description:
-        "A small crochet flower that can be used as an accessory or decoration.",
-      difficulty: Difficulty.BEGINNER,
-      status: ProjectStatus.PUBLISHED,
-      isPublic: true,
-      image: null,
-      authorId: anna.id,
-
-      projectMaterials: {
-        create: [
-          {
-            materialId: cottonYarn.id,
-            quantity: 20,
-            unit: "g",
-          },
-          {
-            materialId: crochetHook.id,
-            quantity: 1,
-            unit: "piece",
-          },
-        ],
+  for (const project of projects) {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: project.authorEmail,
       },
+    });
 
-      instructions: {
-        create: [
-          {
-            title: "Make a magic ring",
-            content:
-              "Create a magic ring and work six single crochet stitches into it.",
-            order: 1,
-          },
-          {
-            title: "Create the petals",
-            content: "Work five petals around the center of the flower.",
-            order: 2,
-          },
-          {
-            title: "Finish",
-            content: "Fasten off and weave in the ends.",
-            order: 3,
-          },
-        ],
+    if (!user) {
+      console.warn(
+        `⚠️ User ${project.authorEmail} not found. Skipping "${project.title}".`,
+      );
+      continue;
+    }
+
+    await prisma.project.create({
+      data: {
+        id: project.id,
+        title: project.title,
+        description: project.description,
+        image: project.image,
+        views: project.views,
+        difficulty: project.difficulty,
+        status: ProjectStatus.PUBLISHED,
+        isPublic: true,
+        authorId: user.id,
+        createdAt: project.createdAt,
       },
-    },
-  });
+    });
 
-  // Likes
-  await prisma.like.createMany({
-    data: [
-      {
-        userId: anna.id,
-        projectId: summerBag.id,
-      },
-      {
-        userId: palina.id,
-        projectId: crochetFlower.id,
-      },
-    ],
-  });
+    console.log(`✓ ${project.title} → ${user.name ?? user.email}`);
+  }
 
-  // Comments
-  await prisma.comment.create({
-    data: {
-      text: "I love this project! The design is so cute.",
-      userId: anna.id,
-      projectId: summerBag.id,
-    },
-  });
-
-  await prisma.comment.create({
-    data: {
-      text: "This looks perfect for a beginner.",
-      userId: palina.id,
-      projectId: crochetFlower.id,
-    },
-  });
-
-  console.log("✅ Database seeded successfully!");
+  console.log("🌱 Seed completed!");
 }
 
 main()

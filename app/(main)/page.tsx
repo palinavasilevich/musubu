@@ -1,9 +1,13 @@
 import { Hero } from "@/components/home/hero";
 import { ProjectsSection } from "@/components/home/projects-section";
-
-import { latestProjects, trendingProjects } from "@/shared/mocks/projects";
+import { getLatestProjects, getTrendingProjects } from "@/lib/projects";
 
 export default async function HomePage() {
+  const [trendingProjects, latestProjects] = await Promise.all([
+    getTrendingProjects(),
+    getLatestProjects(),
+  ]);
+
   return (
     <div className="space-y-12">
       <Hero />

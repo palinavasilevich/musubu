@@ -1,10 +1,40 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { ProjectCard } from "@/components/projects/project-card";
-import { projects } from "@/shared/mocks/projects";
 import { ROUTES } from "@/shared/constants/routes";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/db";
+import { redirect } from "next/navigation";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    redirect(ROUTES.LOGIN);
+  }
+
+  const projects = await prisma.project.findMany({
+    where: {
+      authorId: session.user.id,
+    },
+    include: {
+      author: {
+        select: {
+          name: true,
+          avatar: true,
+        },
+      },
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   return (
     <div className="space-y-8">
       <div className="flex items-end justify-between gap-4">
@@ -25,10 +55,14 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {projects.length > 0 ? (
+      {projects && projects.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
-            <ProjectCard key={project.id} {...project} />
+            <ProjectCard
+              key={project.id}
+              {...project}
+              likes={project._count.likes}
+            />
           ))}
         </div>
       ) : (

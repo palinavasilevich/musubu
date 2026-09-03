@@ -2,6 +2,7 @@ import { Prisma } from "@/prisma/generated/client";
 
 import { prisma } from "@/lib/db";
 import { ProjectStatus } from "@/prisma/generated/client";
+import { Project } from "@/shared/types/project";
 
 export type ProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
@@ -33,7 +34,7 @@ const projectInclude = {
   },
 } satisfies Prisma.ProjectInclude;
 
-export function toProjectCard(project: ProjectWithRelations) {
+export function toProjectCard(project: ProjectWithRelations): Project {
   return {
     id: project.id,
     title: project.title,
@@ -42,10 +43,12 @@ export function toProjectCard(project: ProjectWithRelations) {
     views: project.views,
     difficulty: project.difficulty,
     createdAt: project.createdAt,
+
     author: {
       name: project.author.name ?? "unknown",
-      avatar: project.author.avatar,
+      avatar: project.author.avatar ?? null,
     },
+
     likes: project._count.likes,
   };
 }

@@ -1,3 +1,4 @@
+import { Prisma } from "@/prisma/generated/client";
 import { Difficulty } from "@/prisma/generated/client";
 
 export interface ProjectCardProps {
@@ -17,3 +18,19 @@ export interface Project extends ProjectCardProps {
   difficulty: Difficulty;
   createdAt: Date;
 }
+
+export type ProjectWithRelations = Prisma.ProjectGetPayload<{
+  include: {
+    author: {
+      select: {
+        name: true;
+        avatar: true;
+      };
+    };
+    _count: {
+      select: {
+        likes: true;
+      };
+    };
+  };
+}>;

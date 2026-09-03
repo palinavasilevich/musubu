@@ -2,17 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
-
-export interface ProjectCardProps {
-  id: string;
-  title: string;
-  image: string | null;
-  author: {
-    name: string | null;
-    avatar: string | null;
-  };
-  likes: number;
-}
+import { ProjectCardProps } from "@/shared/types/project";
 
 export function ProjectCard({
   id,

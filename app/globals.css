@@ -202,7 +202,7 @@
     @apply border-border;
 
     cursor:
-      url("/cursor-needle.svg") 4 4,
+      url("/cursor-crochet-hook.svg") 4 4,
       auto;
   }
 
@@ -210,7 +210,7 @@
     @apply bg-background text-foreground font-sans antialiased;
 
     cursor:
-      url("/cursor-needle.svg") 4 4,
+      url("/cursor-crochet-hook.svg") 4 4,
       auto;
   }
 
@@ -222,7 +222,7 @@
   label[for],
   .btn-squish {
     cursor:
-      url("/cursor-needle.svg") 4 4,
+      url("/cursor-crochet-hook.svg") 4 4,
       pointer;
   }
 

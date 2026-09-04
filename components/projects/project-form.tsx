@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,12 +34,35 @@ import {
   SelectValue,
 } from "../ui/select";
 
-export function ProjectForm() {
+import {
+  ProjectMaterialForm,
+  ProjectMaterialsField,
+} from "@/components/projects/project-materials-field";
+import {
+  ProjectInstructionForm,
+  ProjectInstructionsField,
+} from "@/components/projects/project-instructions-field";
+
+import { ImageUpload } from "../ui/image-upload";
+import { AvailableMaterial } from "@/shared/types/project-form";
+
+interface ProjectFormProps {
+  availableMaterials: AvailableMaterial[];
+}
+
+export function ProjectForm({ availableMaterials }: ProjectFormProps) {
   const [state, formAction, isPending] = useActionState<
     CreateProjectActionState | null,
     FormData
   >(createProject, null);
 
+  const [image, setImage] = useState("");
+
+  const [materials, setMaterials] = useState<ProjectMaterialForm[]>([]);
+
+  const [instructions, setInstructions] = useState<ProjectInstructionForm[]>(
+    [],
+  );
   return (
     <Card className="shadow-soft ring-0">
       <CardHeader>
@@ -93,6 +116,24 @@ export function ProjectForm() {
             </Field>
 
             <Field>
+              <FieldLabel htmlFor="image">Image</FieldLabel>
+
+              <ImageUpload
+                value={image}
+                onChange={setImage}
+                onRemove={() => setImage("")}
+              />
+
+              <input type="hidden" name="image" value={image} />
+
+              {state?.errors?.image && (
+                <FieldError>{state.errors.image}</FieldError>
+              )}
+
+              <FieldDescription>Add an image of your project.</FieldDescription>
+            </Field>
+
+            <Field>
               <FieldLabel htmlFor="difficulty">Difficulty</FieldLabel>
 
               <Select name="difficulty" defaultValue="BEGINNER">
@@ -122,6 +163,7 @@ export function ProjectForm() {
                 name="expectedTime"
                 type="number"
                 min="1"
+                max="100000"
                 placeholder="e.g. 180"
                 className="h-12 rounded-2xl border-border/50"
                 aria-invalid={!!state?.errors?.expectedTime}
@@ -136,28 +178,30 @@ export function ProjectForm() {
               )}
             </Field>
 
-            <Field>
-              <FieldLabel htmlFor="image">Image</FieldLabel>
+            <ProjectMaterialsField
+              materials={materials}
+              availableMaterials={availableMaterials}
+              onChange={setMaterials}
+            />
 
-              <Input
-                id="image"
-                name="image"
-                type="url"
-                placeholder="https://example.com/project-image.jpg"
-                className="h-12 rounded-2xl border-border/50"
-                aria-invalid={!!state?.errors?.image}
-              />
+            <input
+              type="hidden"
+              name="materials"
+              value={JSON.stringify(materials)}
+            />
 
-              {state?.errors?.image && (
-                <FieldError>{state.errors.image}</FieldError>
-              )}
+            <ProjectInstructionsField
+              instructions={instructions}
+              onChange={setInstructions}
+            />
 
-              <FieldDescription>
-                Add a URL to an image of your project.
-              </FieldDescription>
-            </Field>
+            <input
+              type="hidden"
+              name="instructions"
+              value={JSON.stringify(instructions)}
+            />
 
-            <Field>
+            {/* <Field>
               <FieldLabel htmlFor="status">Status</FieldLabel>
 
               <Select name="status" defaultValue="DRAFT">
@@ -177,7 +221,7 @@ export function ProjectForm() {
               {state?.errors?.status && (
                 <FieldError>{state.errors.status}</FieldError>
               )}
-            </Field>
+            </Field> */}
 
             <Field orientation="horizontal">
               <input

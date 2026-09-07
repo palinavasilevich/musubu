@@ -7,9 +7,9 @@ import { Difficulty } from "@/prisma/generated/client";
 
 import { ROUTES } from "@/shared/constants/routes";
 
-import type { Project, Prisma } from "@/prisma/generated/client";
+import type { Prisma } from "@/prisma/generated/client";
 import { formatExpectedTime } from "@/lib/formatTime";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 type ProjectWithDetails = Prisma.ProjectGetPayload<{
   include: {

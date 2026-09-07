@@ -1,10 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { ImagePlus, Loader2, X } from "lucide-react";
+import { ImagePlus, X } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { useUploadThing } from "@/lib/uploadthing";
+
+import { Spinner } from "./spinner";
+
+export const MAX_UPLOAD_IMAGE_SIZE = 4 * 1024 * 1024;
 
 interface ImageUploadProps {
   value?: string | null;
@@ -14,19 +18,17 @@ interface ImageUploadProps {
 
 export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
   const [localPreview, setLocalPreview] = useState<string | null>(null);
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (res) => {
-      const url = res[0]?.url;
+      const url = res[0]?.ufsUrl;
 
       if (!url) return;
 
       setLocalPreview(null);
       onChange(url);
     },
-
     onUploadError: (error) => {
       console.error("Image upload failed:", error);
       setLocalPreview(null);
@@ -47,7 +49,7 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
       return;
     }
 
-    if (file.size > 4 * 1024 * 1024) {
+    if (file.size > MAX_UPLOAD_IMAGE_SIZE) {
       console.error("Image must be smaller than 4 MB");
       return;
     }
@@ -93,8 +95,8 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
           </div>
 
           {isUploading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm">
-              <Loader2 className="size-6 animate-spin" />
+            <div className="absolute inset-0 flex items-center justify-center bg-background/40">
+              <Spinner />
             </div>
           )}
 
@@ -126,11 +128,7 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
           disabled={isUploading}
           className="flex aspect-video w-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 bg-muted/30 text-muted-foreground transition-colors hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isUploading ? (
-            <Loader2 className="size-6 animate-spin" />
-          ) : (
-            <ImagePlus className="size-6" />
-          )}
+          {isUploading ? <Spinner /> : <ImagePlus className="size-5" />}
 
           <div className="text-center">
             <p className="font-medium text-foreground">

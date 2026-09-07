@@ -1,17 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  EyeIcon,
-  EyeOffIcon,
-  LockIcon,
-  MailIcon,
-  ShieldCheckIcon,
-  UserIcon,
-} from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,73 +17,47 @@ import {
   FieldError,
   FieldGroup,
 } from "@/components/ui/field";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
-
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
-import { signupAction, SignupActionState } from "@/app/(auth)/signup/actions";
+import { useActionState, useState } from "react";
+import { loginAction, LoginActionState } from "@/app/(auth)/login/actions";
 
-export function SignupForm({
+export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [state, formAction] = useActionState<
-    SignupActionState | null,
-    FormData
-  >(signupAction, null);
+  const [state, formAction] = useActionState<LoginActionState | null, FormData>(
+    loginAction,
+    null,
+  );
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="shadow-soft ring-0">
-        <CardHeader className="text-center">
+        <CardHeader>
           <CardTitle className="font-display text-3xl font-bold mb-2 flex items-center justify-center gap-2">
-            <span>Join the MUSUBU!</span>
-
+            <span>Welcome Back!</span>
             <Image
-              src="/images/yarn.svg"
+              src="/images/cat.svg"
               alt="Yarn Icon"
               width={25}
               height={25}
             />
           </CardTitle>
-
           <CardDescription className="font-normal text-center">
-            Create an account to connect and share
+            Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
-
         <CardContent>
           <form action={formAction} noValidate>
             <FieldGroup className="text-base">
-              <Field>
-                <InputGroup
-                  className={cn(
-                    "px-1 h-12 rounded-2xl border-border/50 text-base",
-                    state?.errors?.name &&
-                      "border-destructive ring-1 ring-destructive/20",
-                  )}
-                  aria-invalid={!!state?.errors?.name}
-                >
-                  <InputGroupInput
-                    id="name"
-                    name="name"
-                    placeholder="Your name"
-                  />
-
-                  <InputGroupAddon align="inline-start">
-                    <UserIcon className="text-muted-foreground" size={18} />
-                  </InputGroupAddon>
-                </InputGroup>
-
-                {state?.errors?.name && (
-                  <FieldError className="text-center">
-                    {state.errors.name}
-                  </FieldError>
-                )}
-              </Field>
-
               <Field>
                 <InputGroup
                   className={cn(
@@ -108,8 +72,8 @@ export function SignupForm({
                     name="email"
                     type="email"
                     placeholder="m@example.com"
+                    required
                   />
-
                   <InputGroupAddon align="inline-start">
                     <MailIcon className="text-muted-foreground" size={18} />
                   </InputGroupAddon>
@@ -168,54 +132,6 @@ export function SignupForm({
               </Field>
 
               <Field>
-                <InputGroup
-                  className={cn(
-                    "px-1 h-12 rounded-2xl border-border/50 text-base",
-                    state?.errors?.confirmPassword &&
-                      "border-destructive ring-1 ring-destructive/20",
-                  )}
-                  aria-invalid={!!state?.errors?.confirmPassword}
-                >
-                  <InputGroupInput
-                    id="confirm-password"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm your password"
-                  />
-
-                  <InputGroupAddon align="inline-start">
-                    <ShieldCheckIcon
-                      className="text-muted-foreground"
-                      size={18}
-                    />
-                  </InputGroupAddon>
-
-                  <InputGroupAddon align="inline-end">
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      className="text-muted-foreground transition-colors hover:text-foreground"
-                      aria-label={
-                        showConfirmPassword ? "Hide password" : "Show password"
-                      }
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOffIcon size={18} />
-                      ) : (
-                        <EyeIcon size={18} />
-                      )}
-                    </button>
-                  </InputGroupAddon>
-                </InputGroup>
-
-                {state?.errors?.confirmPassword && (
-                  <FieldError className="text-center">
-                    {state.errors.confirmPassword}
-                  </FieldError>
-                )}
-              </Field>
-
-              <Field>
                 {state?.apiError && (
                   <FieldError className="text-center">
                     {state.apiError}
@@ -224,18 +140,18 @@ export function SignupForm({
 
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-2xl btn-squish"
+                  className="w-full rounded-2xl h-12 btn-squish"
                 >
-                  Create Account
+                  Sign In
                 </Button>
 
                 <FieldDescription className="px-6 text-center">
-                  Already have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
-                    href={ROUTES.LOGIN}
+                    href={ROUTES.SIGNUP}
                     className="text-primary font-medium no-underline! hover:underline!"
                   >
-                    Sign In
+                    Sign Up
                   </Link>
                 </FieldDescription>
               </Field>

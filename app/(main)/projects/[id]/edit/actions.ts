@@ -23,7 +23,7 @@ const instructionSchema = z.object({
   image: z.url().optional().or(z.literal("")),
 });
 
-const createProjectSchema = z.object({
+const updateProjectSchema = z.object({
   title: z
     .string()
     .trim()
@@ -42,13 +42,13 @@ const createProjectSchema = z.object({
     .max(100000, "Expected time is too large")
     .optional(),
   image: z.url().optional().or(z.literal("")),
-  // status: z.enum(ProjectStatus).optional(),
   isPublic: z.boolean(),
   materials: z.array(materialSchema),
   instructions: z.array(instructionSchema),
 });
 
-export async function createProject(
+export async function updateProject(
+  projectId: string,
   _prevState: ProjectActionState | null,
   formData: FormData,
 ): Promise<ProjectActionState> {
@@ -56,15 +56,15 @@ export async function createProject(
 
   if (!session?.user?.id) {
     return {
-      apiError: "You must be logged in to create a project.",
+      apiError: "You must be logged in to edit a project.",
     };
   }
 
-  let materials: unknown;
-  let instructions: unknown;
-
   const materialsValue = formData.get("materials");
   const instructionsValue = formData.get("instructions");
+
+  let materials: unknown;
+  let instructions: unknown;
 
   try {
     materials = JSON.parse(
@@ -86,21 +86,17 @@ export async function createProject(
     title: String(formData.get("title") ?? ""),
     description: String(formData.get("description") ?? ""),
     difficulty: formData.get("difficulty"),
-
     expectedTime:
       expectedTimeValue && String(expectedTimeValue).trim() !== ""
         ? Number(expectedTimeValue)
         : undefined,
-
     image: String(formData.get("image") ?? ""),
-    // status: formData.get("status") ?? ProjectStatus.PUBLISHED,
     isPublic: formData.get("isPublic") === "true",
-
     materials,
     instructions,
   };
 
-  const parsedData = createProjectSchema.safeParse(data);
+  const parsedData = updateProjectSchema.safeParse(data);
 
   if (!parsedData.success) {
     const errors: Record<string, string> = {};
@@ -133,6 +129,27 @@ export async function createProject(
       };
     }
 
+    const existingProject = await prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+      select: {
+        authorId: true,
+      },
+    });
+
+    if (!existingProject) {
+      return {
+        apiError: "Project not found.",
+      };
+    }
+
+    if (existingProject.authorId !== session.user.id) {
+      return {
+        apiError: "You are not allowed to edit this project.",
+      };
+    }
+
     const existingMaterials = await prisma.material.findMany({
       where: {
         id: {
@@ -152,8 +169,11 @@ export async function createProject(
       };
     }
 
-    const project = await prisma.$transaction(async (tx) => {
-      const project = await tx.project.create({
+    await prisma.$transaction(async (tx) => {
+      await tx.project.update({
+        where: {
+          id: projectId,
+        },
         data: {
           title: parsedData.data.title,
           description: parsedData.data.description,
@@ -162,14 +182,25 @@ export async function createProject(
           image: parsedData.data.image || null,
           status: ProjectStatus.PUBLISHED,
           isPublic: parsedData.data.isPublic,
-          authorId: session.user.id,
+        },
+      });
+
+      await tx.projectMaterial.deleteMany({
+        where: {
+          projectId,
+        },
+      });
+
+      await tx.instruction.deleteMany({
+        where: {
+          projectId,
         },
       });
 
       for (const material of parsedData.data.materials) {
         await tx.projectMaterial.create({
           data: {
-            projectId: project.id,
+            projectId,
             materialId: material.materialId,
             quantity: material.quantity ?? null,
             unit: material.unit || null,
@@ -187,15 +218,13 @@ export async function createProject(
             content: instruction.content,
             image: instruction.image || null,
             order: index + 1,
-            projectId: project.id,
+            projectId,
           },
         });
       }
-
-      return project;
     });
 
-    redirect(ROUTES.PROJECT(project.id));
+    redirect(ROUTES.PROJECT(projectId));
   } catch (error) {
     if (
       error instanceof Error &&
@@ -206,7 +235,7 @@ export async function createProject(
       throw error;
     }
 
-    console.error("Create project error:", error);
+    console.error("Update project error:", error);
 
     return {
       apiError: "Something went wrong. Please try again.",

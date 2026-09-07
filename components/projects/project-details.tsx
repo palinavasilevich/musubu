@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { ArrowLeft, Clock3, Eye, Heart } from "lucide-react";
+import { ArrowLeft, Clock3, Eye, Heart, Pencil } from "lucide-react";
 
 import { Difficulty } from "@/prisma/generated/client";
 
@@ -9,6 +9,7 @@ import { ROUTES } from "@/shared/constants/routes";
 
 import type { Project, Prisma } from "@/prisma/generated/client";
 import { formatExpectedTime } from "@/lib/formatTime";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 type ProjectWithDetails = Prisma.ProjectGetPayload<{
   include: {
@@ -124,14 +125,24 @@ export function ProjectDetails({
             {project.description}
           </p>
 
+          {currentUserId === project.author.id && (
+            <Link
+              href={ROUTES.EDIT_PROJECT(project.id)}
+              className="mt-8 flex w-fit items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-all hover:shadow-lg btn-squish"
+            >
+              <Pencil className="size-4" />
+              Edit
+            </Link>
+          )}
+
           {currentUserId !== project.author.id && (
-            <button
+            <Button
               type="button"
               className="mt-8 flex w-fit items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-all hover:shadow-lg btn-squish"
             >
               <Heart className="size-4" />
               Like
-            </button>
+            </Button>
           )}
         </div>
       </section>

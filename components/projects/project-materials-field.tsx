@@ -12,12 +12,7 @@ import {
 import { Input } from "../ui/input";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
 import { Button } from "../ui/button";
-
-export interface ProjectMaterialForm {
-  materialId: string | null;
-  quantity: string;
-  unit: string;
-}
+import { ProjectMaterialForm } from "@/shared/types/project-form";
 
 interface ProjectMaterialsFieldProps {
   materials: ProjectMaterialForm[];

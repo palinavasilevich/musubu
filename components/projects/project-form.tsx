@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import {
   Field,
   FieldDescription,
@@ -18,14 +17,8 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-import {
-  createProject,
-  CreateProjectActionState,
-} from "@/app/(main)/projects/new/actions";
 import {
   Select,
   SelectContent,
@@ -34,44 +27,75 @@ import {
   SelectValue,
 } from "../ui/select";
 
-import {
-  ProjectMaterialForm,
-  ProjectMaterialsField,
-} from "@/components/projects/project-materials-field";
-import {
-  ProjectInstructionForm,
-  ProjectInstructionsField,
-} from "@/components/projects/project-instructions-field";
+import { ProjectMaterialsField } from "@/components/projects/project-materials-field";
+import { ProjectInstructionsField } from "@/components/projects/project-instructions-field";
 
 import { ImageUpload } from "../ui/image-upload";
-import { AvailableMaterial } from "@/shared/types/project-form";
+import {
+  AvailableMaterial,
+  ProjectActionState,
+  ProjectInstructionForm,
+  ProjectMaterialForm,
+} from "@/shared/types/project-form";
+
+import { createProject } from "@/app/(main)/projects/new/actions";
+
+import { updateProject } from "@/app/(main)/projects/[id]/edit/actions";
+
+interface ProjectFormInitialData {
+  title: string;
+  description: string;
+  image: string;
+  difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  expectedTime: number | null;
+  isPublic: boolean;
+  materials: ProjectMaterialForm[];
+  instructions: ProjectInstructionForm[];
+}
 
 interface ProjectFormProps {
   availableMaterials: AvailableMaterial[];
+  projectId?: string;
+  initialData?: ProjectFormInitialData;
 }
 
-export function ProjectForm({ availableMaterials }: ProjectFormProps) {
+export function ProjectForm({
+  availableMaterials,
+  projectId,
+  initialData,
+}: ProjectFormProps) {
+  const isEditMode = Boolean(projectId && initialData);
+
+  const action = projectId
+    ? updateProject.bind(null, projectId)
+    : createProject;
+
   const [state, formAction, isPending] = useActionState<
-    CreateProjectActionState | null,
+    ProjectActionState | null,
     FormData
-  >(createProject, null);
+  >(action, null);
 
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(initialData?.image ?? "");
 
-  const [materials, setMaterials] = useState<ProjectMaterialForm[]>([]);
+  const [materials, setMaterials] = useState<ProjectMaterialForm[]>(
+    initialData?.materials ?? [],
+  );
 
   const [instructions, setInstructions] = useState<ProjectInstructionForm[]>(
-    [],
+    initialData?.instructions ?? [],
   );
+
   return (
     <Card className="shadow-soft ring-0">
       <CardHeader>
         <CardTitle className="font-display text-3xl font-bold">
-          Create a project
+          {isEditMode ? "Edit project" : "Create a project"}
         </CardTitle>
 
         <CardDescription>
-          Share your creative project with the MUSUBU community.
+          {isEditMode
+            ? "Update your project details."
+            : "Share your creative project with the MUSUBU community."}
         </CardDescription>
       </CardHeader>
 
@@ -84,6 +108,7 @@ export function ProjectForm({ availableMaterials }: ProjectFormProps) {
               <Input
                 id="title"
                 name="title"
+                defaultValue={initialData?.title}
                 placeholder="Cozy Autumn Sweater"
                 className="h-12 rounded-2xl border-border/50"
                 aria-invalid={!!state?.errors?.title}
@@ -100,6 +125,7 @@ export function ProjectForm({ availableMaterials }: ProjectFormProps) {
               <Textarea
                 id="description"
                 name="description"
+                defaultValue={initialData?.description}
                 placeholder="Tell the community about your project..."
                 className="min-h-32 resize-none rounded-2xl border-border/50"
                 aria-invalid={!!state?.errors?.description}
@@ -136,7 +162,10 @@ export function ProjectForm({ availableMaterials }: ProjectFormProps) {
             <Field>
               <FieldLabel htmlFor="difficulty">Difficulty</FieldLabel>
 
-              <Select name="difficulty" defaultValue="BEGINNER">
+              <Select
+                name="difficulty"
+                defaultValue={initialData?.difficulty ?? "BEGINNER"}
+              >
                 <SelectTrigger
                   id="difficulty"
                   className="h-12 rounded-2xl border-border/50"
@@ -150,6 +179,7 @@ export function ProjectForm({ availableMaterials }: ProjectFormProps) {
                   <SelectItem value="ADVANCED">ADVANCED</SelectItem>
                 </SelectContent>
               </Select>
+
               {state?.errors?.difficulty && (
                 <FieldError>{state.errors.difficulty}</FieldError>
               )}
@@ -164,6 +194,7 @@ export function ProjectForm({ availableMaterials }: ProjectFormProps) {
                 type="number"
                 min="1"
                 max="100000"
+                defaultValue={initialData?.expectedTime ?? ""}
                 placeholder="e.g. 180"
                 className="h-12 rounded-2xl border-border/50"
                 aria-invalid={!!state?.errors?.expectedTime}
@@ -201,34 +232,13 @@ export function ProjectForm({ availableMaterials }: ProjectFormProps) {
               value={JSON.stringify(instructions)}
             />
 
-            {/* <Field>
-              <FieldLabel htmlFor="status">Status</FieldLabel>
-
-              <Select name="status" defaultValue="DRAFT">
-                <SelectTrigger
-                  id="status"
-                  className="h-12 rounded-2xl border-border/50"
-                >
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="DRAFT">DRAFT</SelectItem>
-                  <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {state?.errors?.status && (
-                <FieldError>{state.errors.status}</FieldError>
-              )}
-            </Field> */}
-
             <Field orientation="horizontal">
               <input
                 id="isPublic"
                 name="isPublic"
                 type="checkbox"
                 value="true"
+                defaultChecked={initialData?.isPublic ?? false}
                 className="size-4 accent-primary"
               />
 
@@ -253,7 +263,13 @@ export function ProjectForm({ availableMaterials }: ProjectFormProps) {
               disabled={isPending}
               className="h-12 w-full rounded-2xl btn-squish"
             >
-              {isPending ? "Creating..." : "Create project"}
+              {isPending
+                ? isEditMode
+                  ? "Saving..."
+                  : "Creating..."
+                : isEditMode
+                  ? "Save changes"
+                  : "Create project"}
             </Button>
           </FieldGroup>
         </form>

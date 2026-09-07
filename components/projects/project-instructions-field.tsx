@@ -7,12 +7,7 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
 import { ImageUpload } from "../ui/image-upload";
-
-export interface ProjectInstructionForm {
-  title: string;
-  content: string;
-  image: string;
-}
+import { ProjectInstructionForm } from "@/shared/types/project-form";
 
 interface ProjectInstructionsFieldProps {
   instructions: ProjectInstructionForm[];

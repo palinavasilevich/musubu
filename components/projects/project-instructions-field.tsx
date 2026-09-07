@@ -1,10 +1,12 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
+
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
+import { ImageUpload } from "../ui/image-upload";
 
 export interface ProjectInstructionForm {
   title: string;
@@ -57,7 +59,6 @@ export function ProjectInstructionsField({
     <Field>
       <div>
         <FieldLabel>Instructions</FieldLabel>
-
         <FieldDescription>
           Add step-by-step instructions for your project.
         </FieldDescription>
@@ -72,6 +73,7 @@ export function ProjectInstructionsField({
             >
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="font-display font-semibold">Step {index + 1}</h3>
+
                 <Button
                   type="button"
                   variant="ghost"
@@ -91,7 +93,7 @@ export function ProjectInstructionsField({
                     updateInstruction(index, "title", event.target.value)
                   }
                   placeholder="Step title"
-                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full rounded-xl"
                 />
 
                 <Textarea
@@ -101,7 +103,13 @@ export function ProjectInstructionsField({
                   }
                   placeholder="Describe this step..."
                   rows={5}
-                  className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full resize-none rounded-xl"
+                />
+
+                <ImageUpload
+                  value={instruction.image}
+                  onChange={(url) => updateInstruction(index, "image", url)}
+                  onRemove={() => updateInstruction(index, "image", "")}
                 />
               </div>
             </div>
@@ -111,7 +119,7 @@ export function ProjectInstructionsField({
             type="button"
             variant="outline"
             onClick={addInstruction}
-            className="inline-flex items-center gap-2 rounded-xl bg-transparent border border-dashed border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="inline-flex items-center gap-2 rounded-xl border border-dashed border-border bg-transparent px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <Plus className="size-4" />
             Add step

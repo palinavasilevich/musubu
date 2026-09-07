@@ -9,7 +9,10 @@ import { z } from "zod";
 
 const materialSchema = z.object({
   materialId: z.string().min(1, "Material is required"),
-  quantity: z.coerce.number().positive().optional(),
+  quantity: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.coerce.number().positive().optional(),
+  ),
   unit: z.string().trim().optional(),
 });
 

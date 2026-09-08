@@ -10,6 +10,7 @@ import { ROUTES } from "@/shared/constants/routes";
 import type { Prisma } from "@/prisma/generated/client";
 import { formatExpectedTime } from "@/lib/formatTime";
 import { Button } from "@/components/ui/button";
+import { DeleteProjectButton } from "./delete-project-button";
 
 type ProjectWithDetails = Prisma.ProjectGetPayload<{
   include: {
@@ -126,13 +127,17 @@ export function ProjectDetails({
           </p>
 
           {currentUserId === project.author.id && (
-            <Link
-              href={ROUTES.EDIT_PROJECT(project.id)}
-              className="mt-8 flex w-fit items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-all hover:shadow-lg btn-squish"
-            >
-              <Pencil className="size-4" />
-              Edit
-            </Link>
+            <div className="mt-8 flex gap-3">
+              <Link
+                href={ROUTES.EDIT_PROJECT(project.id)}
+                className="flex w-fit items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-all hover:shadow-lg btn-squish"
+              >
+                <Pencil className="size-4" />
+                Edit
+              </Link>
+
+              <DeleteProjectButton projectId={project.id} />
+            </div>
           )}
 
           {currentUserId !== project.author.id && (

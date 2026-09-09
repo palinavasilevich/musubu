@@ -5,7 +5,7 @@ model Project {
     views        Int           @default(0)
     image        String?
     difficulty   Difficulty
-    status       ProjectStatus
+    status       ProjectStatus @default(DRAFT)
     expectedTime Int?          @map("expected_time")
 
     authorId String @map("author_id")
@@ -17,8 +17,6 @@ model Project {
     instructions Instruction[]
     likes        Like[]
     comments     Comment[]
-
-    isPublic Boolean @default(false) @map("is_public")
 
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")

@@ -50,7 +50,6 @@ const projects = [
     status: ProjectStatus.PUBLISHED,
     views: 81,
     createdAt: new Date("2026-08-31"),
-    isPublic: true,
     materials: [
       "Cotton yarn — 50 g",
       "3 mm crochet hook",
@@ -158,7 +157,6 @@ async function main() {
         image: projectData.image,
         difficulty: projectData.difficulty,
         status: projectData.status,
-        isPublic: projectData.isPublic,
         views: projectData.views,
         authorId: user.id,
         createdAt: projectData.createdAt,

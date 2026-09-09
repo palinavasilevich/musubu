@@ -2,20 +2,11 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { Difficulty, ProjectStatus } from "@/prisma/generated/client";
+import { PROJECT_DIFFICULTIES } from "@/shared/constants/project";
 import { ROUTES } from "@/shared/constants/routes";
 import { ProjectActionState } from "@/shared/types/project-form";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-
-const materialSchema = z.object({
-  materialId: z.string().min(1, "Material is required"),
-  quantity: z.preprocess(
-    (value) => (value === "" ? undefined : value),
-    z.coerce.number().positive().optional(),
-  ),
-  unit: z.string().trim().optional(),
-});
 
 const instructionSchema = z.object({
   title: z.string().trim().min(1, "Step title is required"),
@@ -34,7 +25,7 @@ const createProjectSchema = z.object({
     .trim()
     .min(1, "Description is required")
     .max(2000, "Description is too long"),
-  difficulty: z.enum(Difficulty),
+  difficulty: z.enum(PROJECT_DIFFICULTIES),
   expectedTime: z
     .number()
     .int()
@@ -42,9 +33,10 @@ const createProjectSchema = z.object({
     .max(100000, "Expected time is too large")
     .optional(),
   image: z.url().optional().or(z.literal("")),
-  // status: z.enum(ProjectStatus).optional(),
-  isPublic: z.boolean(),
-  materials: z.array(materialSchema),
+  materials: z
+    .array(z.string().trim().min(1, "Material is required"))
+    .max(50, "Too many materials"),
+  videoUrl: z.url().optional().or(z.literal("")),
   instructions: z.array(instructionSchema),
 });
 
@@ -86,17 +78,13 @@ export async function createProject(
     title: String(formData.get("title") ?? ""),
     description: String(formData.get("description") ?? ""),
     difficulty: formData.get("difficulty"),
-
     expectedTime:
       expectedTimeValue && String(expectedTimeValue).trim() !== ""
         ? Number(expectedTimeValue)
         : undefined,
-
     image: String(formData.get("image") ?? ""),
-    // status: formData.get("status") ?? ProjectStatus.PUBLISHED,
-    isPublic: formData.get("isPublic") === "true",
-
     materials,
+    videoUrl: String(formData.get("videoUrl") ?? ""),
     instructions,
   };
 
@@ -119,80 +107,25 @@ export async function createProject(
   }
 
   try {
-    const materialIds = parsedData.data.materials.map(
-      (material) => material.materialId,
-    );
-
-    const uniqueMaterialIds = [...new Set(materialIds)];
-
-    if (uniqueMaterialIds.length !== materialIds.length) {
-      return {
-        errors: {
-          materials: "A material can only be added once.",
-        },
-      };
-    }
-
-    const existingMaterials = await prisma.material.findMany({
-      where: {
-        id: {
-          in: uniqueMaterialIds,
-        },
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    if (existingMaterials.length !== uniqueMaterialIds.length) {
-      return {
-        errors: {
-          materials: "One or more selected materials do not exist.",
-        },
-      };
-    }
-
-    const project = await prisma.$transaction(async (tx) => {
-      const project = await tx.project.create({
-        data: {
-          title: parsedData.data.title,
-          description: parsedData.data.description,
-          difficulty: parsedData.data.difficulty,
-          expectedTime: parsedData.data.expectedTime ?? null,
-          image: parsedData.data.image || null,
-          status: ProjectStatus.PUBLISHED,
-          isPublic: parsedData.data.isPublic,
-          authorId: session.user.id,
-        },
-      });
-
-      for (const material of parsedData.data.materials) {
-        await tx.projectMaterial.create({
-          data: {
-            projectId: project.id,
-            materialId: material.materialId,
-            quantity: material.quantity ?? null,
-            unit: material.unit || null,
-          },
-        });
-      }
-
-      for (const [
-        index,
-        instruction,
-      ] of parsedData.data.instructions.entries()) {
-        await tx.instruction.create({
-          data: {
+    const project = await prisma.project.create({
+      data: {
+        title: parsedData.data.title,
+        description: parsedData.data.description,
+        difficulty: parsedData.data.difficulty,
+        expectedTime: parsedData.data.expectedTime ?? null,
+        image: parsedData.data.image || null,
+        authorId: session.user.id,
+        materials: parsedData.data.materials,
+        videoUrl: parsedData.data.videoUrl || null,
+        instructions: {
+          create: parsedData.data.instructions.map((instruction, index) => ({
             title: instruction.title,
             content: instruction.content,
             image: instruction.image || null,
             order: index + 1,
-            projectId: project.id,
-          },
-        });
-      }
-
-      return project;
+          })),
+        },
+      },
     });
 
     redirect(ROUTES.PROJECT(project.id));

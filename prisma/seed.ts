@@ -1,3 +1,5 @@
+import bcrypt from "bcryptjs";
+
 import { PrismaClient, Difficulty, ProjectStatus } from "./generated/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -13,6 +15,30 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
+const users = [
+  {
+    id: "seed-user-1",
+    email: "palina@example.com",
+    password: "password123",
+    username: "palina",
+    avatar: null,
+  },
+  {
+    id: "seed-user-2",
+    email: "anna@example.com",
+    password: "password123",
+    username: "anna",
+    avatar: null,
+  },
+  {
+    id: "seed-user-3",
+    email: "kate@example.com",
+    password: "password123",
+    username: "kate",
+    avatar: null,
+  },
+];
+
 const projects = [
   {
     id: "seed-bunny",
@@ -21,36 +47,17 @@ const projects = [
       "A cute little crochet bunny that makes a lovely handmade gift. A simple amigurumi project for beginners.",
     image: "/images/projects/crochet-bunny.webp",
     difficulty: Difficulty.BEGINNER,
+    status: ProjectStatus.PUBLISHED,
     views: 81,
     createdAt: new Date("2026-08-31"),
-
+    isPublic: true,
     materials: [
-      {
-        name: "Cotton yarn",
-        description: "Soft cotton yarn suitable for amigurumi.",
-        quantity: 50,
-        unit: "g",
-      },
-      {
-        name: "Crochet hook",
-        description: "A 3 mm crochet hook.",
-        quantity: 1,
-        unit: "pcs",
-      },
-      {
-        name: "Safety eyes",
-        description: "Small black safety eyes for the bunny.",
-        quantity: 2,
-        unit: "pcs",
-      },
-      {
-        name: "Polyester stuffing",
-        description: "Soft filling for amigurumi toys.",
-        quantity: 30,
-        unit: "g",
-      },
+      "Cotton yarn — 50 g",
+      "3 mm crochet hook",
+      "Safety eyes — 2 pcs",
+      "Polyester stuffing — 30 g",
     ],
-
+    videoUrl: null,
     instructions: [
       {
         order: 1,
@@ -96,82 +103,41 @@ const projects = [
       },
     ],
   },
-
-  {
-    id: "seed-sweater",
-    title: "Cozy Autumn Sweater",
-    description:
-      "A warm and cozy sweater for chilly autumn days. A simple and comfortable knitting project.",
-    image: "/images/projects/autumn-sweater.webp",
-    difficulty: Difficulty.BEGINNER,
-    views: 342,
-    createdAt: new Date("2026-08-28"),
-
-    materials: [
-      {
-        name: "Wool yarn",
-        description: "Warm medium-weight wool yarn.",
-        quantity: 500,
-        unit: "g",
-      },
-      {
-        name: "Knitting needles",
-        description: "Straight or circular knitting needles.",
-        quantity: 1,
-        unit: "set",
-      },
-    ],
-
-    instructions: [
-      {
-        order: 1,
-        title: "Knit the front",
-        content:
-          "Cast on the required number of stitches and knit the front panel according to the desired measurements.",
-        image: null,
-      },
-      {
-        order: 2,
-        title: "Knit the back",
-        content: "Repeat the same process for the back panel.",
-        image: null,
-      },
-      {
-        order: 3,
-        title: "Make the sleeves",
-        content: "Knit two sleeves and shape them gradually toward the cuffs.",
-        image: null,
-      },
-      {
-        order: 4,
-        title: "Assemble the sweater",
-        content:
-          "Sew the shoulders and sides together, then attach the sleeves.",
-        image: null,
-      },
-    ],
-  },
 ];
 
 async function main() {
   console.log("🌱 Starting seed...");
 
-  const users = await prisma.user.findMany({
-    orderBy: {
-      createdAt: "asc",
-    },
-    take: 3,
-  });
+  const hashedUsers = await Promise.all(
+    users.map(async (user) => ({
+      ...user,
+      password: await bcrypt.hash(user.password, 10),
+    })),
+  );
 
-  if (users.length === 0) {
-    throw new Error(
-      "No users found. Create at least one user before running the seed.",
-    );
+  for (const user of hashedUsers) {
+    await prisma.user.upsert({
+      where: {
+        email: user.email,
+      },
+      update: {
+        username: user.username,
+        avatar: user.avatar,
+      },
+      create: user,
+    });
   }
 
-  console.log(`Found ${users.length} existing user(s).`);
+  console.log(`✓ Created/updated ${hashedUsers.length} user(s)`);
 
-  // Remove previously seeded projects.
+  const seededUsers = await prisma.user.findMany({
+    where: {
+      email: {
+        in: users.map((user) => user.email),
+      },
+    },
+  });
+
   await prisma.project.deleteMany({
     where: {
       id: {
@@ -182,7 +148,7 @@ async function main() {
 
   for (let index = 0; index < projects.length; index++) {
     const projectData = projects[index];
-    const user = users[index % users.length];
+    const user = seededUsers[index % seededUsers.length];
 
     const project = await prisma.project.create({
       data: {
@@ -191,45 +157,24 @@ async function main() {
         description: projectData.description,
         image: projectData.image,
         difficulty: projectData.difficulty,
-        status: ProjectStatus.PUBLISHED,
-        isPublic: true,
+        status: projectData.status,
+        isPublic: projectData.isPublic,
         views: projectData.views,
         authorId: user.id,
         createdAt: projectData.createdAt,
-
-        projectMaterials: {
-          create: projectData.materials.map((material) => ({
-            quantity: material.quantity,
-            unit: material.unit,
-
-            material: {
-              create: {
-                name: material.name,
-                description: material.description,
-              },
-            },
-          })),
-        },
-
+        materials: projectData.materials,
+        videoUrl: projectData.videoUrl,
         instructions: {
           create: projectData.instructions,
         },
       },
-
       include: {
-        projectMaterials: {
-          include: {
-            material: true,
-          },
-        },
         instructions: true,
       },
     });
 
-    console.log(`✓ ${project.title} → ${user.name ?? user.email}`);
-
-    console.log(`  Materials: ${project.projectMaterials.length}`);
-
+    console.log(`✓ ${project.title} → ${user.username ?? user.email}`);
+    console.log(`  Materials: ${projectData.materials.length}`);
     console.log(`  Instructions: ${project.instructions.length}`);
   }
 

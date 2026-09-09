@@ -1,11 +1,9 @@
 model Project {
-    id          String @id @default(cuid())
-    title       String
-    description String
-
-    views Int     @default(0)
-    image String?
-
+    id           String        @id @default(cuid())
+    title        String
+    description  String
+    views        Int           @default(0)
+    image        String?
     difficulty   Difficulty
     status       ProjectStatus
     expectedTime Int?          @map("expected_time")
@@ -13,11 +11,12 @@ model Project {
     authorId String @map("author_id")
     author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-    projectMaterials ProjectMaterial[]
-    instructions     Instruction[]
+    materials Json?
+    videoUrl  String?
 
-    likes    Like[]
-    comments Comment[]
+    instructions Instruction[]
+    likes        Like[]
+    comments     Comment[]
 
     isPublic Boolean @default(false) @map("is_public")
 
@@ -28,13 +27,13 @@ model Project {
     @@map("projects")
 }
 
+enum ProjectStatus {
+    DRAFT
+    PUBLISHED
+}
+
 enum Difficulty {
     BEGINNER
     INTERMEDIATE
     ADVANCED
-}
-
-enum ProjectStatus {
-    DRAFT
-    PUBLISHED
 }

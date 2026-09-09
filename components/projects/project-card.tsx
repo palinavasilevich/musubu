@@ -41,7 +41,7 @@ export function ProjectCard({
 
           <div className="flex items-center justify-between gap-3">
             <span className="truncate text-sm text-muted-foreground">
-              @{author.name ?? "Unknown"}
+              @{author.username ?? "Unknown"}
             </span>
             <p className="flex items-center gap-3">
               {expectedTime && (

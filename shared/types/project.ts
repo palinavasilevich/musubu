@@ -6,7 +6,7 @@ export interface Project {
   title: string;
   image: string | null;
   author: {
-    name: string;
+    username: string;
     avatar?: string | null;
   };
   likes: number;
@@ -21,7 +21,7 @@ export type ProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
     author: {
       select: {
-        name: true;
+        username: true;
         avatar: true;
       };
     };

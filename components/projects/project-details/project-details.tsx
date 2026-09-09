@@ -1,25 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { ArrowLeft, Clock3, Eye, Heart, Pencil } from "lucide-react";
-
-import { Difficulty } from "@/prisma/generated/client";
-
-import { ROUTES } from "@/shared/constants/routes";
+import { ArrowLeft, Clock3, Eye, Heart, Pencil, Play } from "lucide-react";
 
 import type { Prisma } from "@/prisma/generated/client";
+
 import { formatExpectedTime } from "@/lib/formatTime";
+import { PROJECT_DIFFICULTY_LABELS } from "@/shared/constants/project";
+import { ROUTES } from "@/shared/constants/routes";
+
 import { Button } from "@/components/ui/button";
+
 import { DeleteProjectButton } from "./delete-project-button";
+import { ProjectStatusButton } from "./project-status-button";
 
 type ProjectWithDetails = Prisma.ProjectGetPayload<{
   include: {
     author: true;
-    projectMaterials: {
-      include: {
-        material: true;
-      };
-    };
     instructions: true;
     _count: {
       select: {
@@ -35,17 +32,19 @@ interface ProjectDetailsProps {
   currentUserId: string | null;
 }
 
-const difficultyLabels: Record<Difficulty, string> = {
-  BEGINNER: "Beginner",
-  INTERMEDIATE: "Intermediate",
-  ADVANCED: "Advanced",
-};
-
 export function ProjectDetails({
   project,
   likes,
   currentUserId,
 }: ProjectDetailsProps) {
+  const materials = Array.isArray(project.materials)
+    ? project.materials.filter(
+        (material): material is string => typeof material === "string",
+      )
+    : [];
+
+  const isOwner = currentUserId === project.author.id;
+
   return (
     <article className="space-y-8">
       <Link
@@ -55,27 +54,29 @@ export function ProjectDetails({
         <ArrowLeft className="size-4" />
         Back to projects
       </Link>
-      <section className="grid gap-8 md:grid-cols-2">
+
+      <section className="grid gap-10 lg:grid-cols-2 lg:items-start">
         <div className="relative aspect-square overflow-hidden rounded-3xl bg-muted">
           {project.image ? (
             <Image
               src={project.image}
               alt={project.title}
               fill
+              priority
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              No image
+            <div className="flex h-full items-center justify-center">
+              <span className="text-sm text-muted-foreground">No image</span>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col justify-start">
-          <div className="flex items-center justify-between gap-4">
-            <span className="rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
-              {difficultyLabels[project.difficulty]}
+        <div className="flex min-w-0 flex-col">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <span className="rounded-full bg-secondary px-4 py-1.5 text-sm font-medium text-secondary-foreground">
+              {PROJECT_DIFFICULTY_LABELS[project.difficulty]}
             </span>
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -98,39 +99,33 @@ export function ProjectDetails({
             </div>
           </div>
 
-          <h1 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="mt-5 font-display text-4xl font-bold tracking-tight sm:text-5xl">
             {project.title}
           </h1>
 
-          <Link
-            href={`${ROUTES.PROFILE}/${project.author.name}`}
-            className="mt-5 flex w-fit items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {/* {project.author.avatar ? (
-              <Image
-                src={project.author.avatar}
-                alt={project.author.name ?? "User avatar"}
-                width={32}
-                height={32}
-                className="size-8 rounded-full object-cover"
-              />
-            ) : (
-              <span className="flex size-8 items-center justify-center rounded-full bg-secondary">
-                <UserIcon size={16} />
-              </span>
-            )} */}
-            <span className="font-medium">by @{project.author.name}</span>
-          </Link>
+          {project.author.username && (
+            <Link
+              href={`${ROUTES.PROFILE}/${project.author.username}`}
+              className="mt-4 w-fit text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              by @{project.author.username}
+            </Link>
+          )}
 
-          <p className="mt-6 leading-7 text-muted-foreground">
+          <p className="mt-6 max-w-2xl leading-7 text-muted-foreground">
             {project.description}
           </p>
 
-          {currentUserId === project.author.id && (
-            <div className="mt-8 flex gap-3">
+          {isOwner && (
+            <div className="mt-8 flex flex-wrap gap-3">
+              <ProjectStatusButton
+                projectId={project.id}
+                status={project.status}
+              />
+
               <Link
                 href={ROUTES.EDIT_PROJECT(project.id)}
-                className="flex w-fit items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-all hover:shadow-lg btn-squish"
+                className="flex h-12 w-fit items-center gap-2 rounded-2xl bg-secondary px-6 text-sm font-medium text-secondary-foreground shadow-soft transition-all hover:bg-secondary/80 hover:shadow-lg btn-squish"
               >
                 <Pencil className="size-4" />
                 Edit
@@ -140,7 +135,7 @@ export function ProjectDetails({
             </div>
           )}
 
-          {currentUserId !== project.author.id && (
+          {!isOwner && currentUserId && (
             <Button
               type="button"
               className="mt-8 flex w-fit items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-all hover:shadow-lg btn-squish"
@@ -152,50 +147,55 @@ export function ProjectDetails({
         </div>
       </section>
 
-      {project.projectMaterials.length > 0 && (
+      {materials.length > 0 && (
         <section className="space-y-5">
           <div>
             <h2 className="font-display text-2xl font-semibold">Materials</h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
-              Everything you need for this project.
+              Everything you need to make this project.
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {project.projectMaterials.map(
-              ({ id, material, quantity, unit }) => (
-                <div
-                  key={id}
-                  className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-soft"
-                >
-                  {material.image && (
-                    <div className="relative aspect-video">
-                      <Image
-                        src={material.image}
-                        alt={material.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
+          <div className="rounded-3xl border border-border/50 bg-card p-6 shadow-soft">
+            <ol className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+              {materials.map((material, index) => (
+                <li key={`${material}-${index}`} className="flex gap-3">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-medium text-secondary-foreground">
+                    {index + 1}
+                  </span>
 
-                  <div className="p-4">
-                    <h3 className="font-medium">{material.name}</h3>
-
-                    {quantity !== null && (
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {quantity} {unit ?? ""}
-                      </p>
-                    )}
-
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {material.description}
-                    </p>
-                  </div>
-                </div>
-              ),
-            )}
+                  <span className="pt-0.5 text-sm text-muted-foreground">
+                    {material}
+                  </span>
+                </li>
+              ))}
+            </ol>
           </div>
+        </section>
+      )}
+
+      {project.videoUrl && (
+        <section className="space-y-5">
+          <div>
+            <h2 className="font-display text-2xl font-semibold">
+              Video Tutorial
+            </h2>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              Watch the video tutorial for this project.
+            </p>
+          </div>
+
+          <a
+            href={project.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-all hover:shadow-lg btn-squish"
+          >
+            <Play className="size-4" />
+            Watch tutorial
+          </a>
         </section>
       )}
 
@@ -205,12 +205,13 @@ export function ProjectDetails({
             <h2 className="font-display text-2xl font-semibold">
               Instructions
             </h2>
+
             <p className="mt-1 text-sm text-muted-foreground">
               Follow the steps to create this project.
             </p>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-5">
             {project.instructions.map((instruction, index) => (
               <div
                 key={instruction.id}
@@ -226,7 +227,7 @@ export function ProjectDetails({
                       {instruction.title}
                     </h3>
 
-                    <p className="mt-2 whitespace-pre-line text-muted-foreground">
+                    <p className="mt-2 whitespace-pre-line leading-7 text-muted-foreground">
                       {instruction.content}
                     </p>
 
@@ -237,6 +238,7 @@ export function ProjectDetails({
                           alt={instruction.title}
                           fill
                           className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 768px"
                         />
                       </div>
                     )}

@@ -1,14 +1,16 @@
-import { Prisma } from "@/prisma/generated/client";
+import type { Prisma } from "@/prisma/generated/client";
 
 import { prisma } from "@/lib/db";
+
 import { ProjectStatus } from "@/prisma/generated/client";
+
 import { Project } from "@/shared/types/project";
 
 export type ProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
     author: {
       select: {
-        name: true;
+        username: true;
         avatar: true;
       };
     };
@@ -23,7 +25,7 @@ export type ProjectWithRelations = Prisma.ProjectGetPayload<{
 const projectInclude = {
   author: {
     select: {
-      name: true,
+      username: true,
       avatar: true,
     },
   },
@@ -43,12 +45,10 @@ export function toProjectCard(project: ProjectWithRelations): Project {
     views: project.views,
     difficulty: project.difficulty,
     createdAt: project.createdAt,
-
     author: {
-      name: project.author.name ?? "unknown",
+      username: project.author.username ?? "unknown",
       avatar: project.author.avatar ?? null,
     },
-
     likes: project._count.likes,
   };
 }
@@ -56,7 +56,6 @@ export function toProjectCard(project: ProjectWithRelations): Project {
 export async function getAllProjects() {
   const projects = await prisma.project.findMany({
     where: {
-      isPublic: true,
       status: ProjectStatus.PUBLISHED,
     },
     include: projectInclude,
@@ -68,7 +67,6 @@ export async function getAllProjects() {
 export async function getTrendingProjects() {
   const projects = await prisma.project.findMany({
     where: {
-      isPublic: true,
       status: ProjectStatus.PUBLISHED,
     },
     include: projectInclude,
@@ -86,7 +84,6 @@ export async function getTrendingProjects() {
 export async function getLatestProjects() {
   const projects = await prisma.project.findMany({
     where: {
-      isPublic: true,
       status: ProjectStatus.PUBLISHED,
     },
     include: projectInclude,

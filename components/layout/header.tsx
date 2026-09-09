@@ -57,7 +57,7 @@ export function Header({ user }: HeaderProps) {
                   >
                     <UserIcon size={16} />
 
-                    {user.name ?? user.email}
+                    {user.username ?? user.email}
                   </Link>
 
                   <LogoutButton />

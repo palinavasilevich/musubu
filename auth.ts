@@ -44,7 +44,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
+          username: user.username ?? "unknown",
         };
       },
     }),
@@ -59,7 +59,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
         token.email = user.email;
-        token.name = user.name;
+        token.username = user.username;
       }
 
       return token;
@@ -68,7 +68,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
-        session.user.name = token.name;
+        session.user.username = token.username as string;
       }
       return session;
     },

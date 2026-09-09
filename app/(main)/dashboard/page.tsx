@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     include: {
       author: {
         select: {
-          name: true,
+          username: true,
           avatar: true,
         },
       },

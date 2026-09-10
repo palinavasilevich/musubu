@@ -1,9 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+
 import { Clock3, Heart } from "lucide-react";
+
+import { formatExpectedTime } from "@/lib/formatTime";
 import { ROUTES } from "@/shared/constants/routes";
 import { Project } from "@/shared/types/project";
-import { formatExpectedTime } from "@/lib/formatTime";
+
+import { ProjectLikeButton } from "./project-like-button";
 
 export function ProjectCard({
   id,
@@ -11,6 +15,8 @@ export function ProjectCard({
   image,
   author,
   likes,
+  liked,
+  canLike,
   expectedTime,
 }: Project) {
   return (
@@ -29,9 +35,12 @@ export function ProjectCard({
               No image
             </div>
           )}
-          <div className="absolute right-3 top-3 rounded-2xl bg-background/80 p-2 backdrop-blur-sm">
-            <Heart className="size-5 text-foreground/70" />
-          </div>
+          {/* 
+          {canLike && (
+            <div className="absolute right-3 top-3">
+              <ProjectLikeButton projectId={id} liked={liked} />
+            </div>
+          )} */}
         </div>
 
         <div className="space-y-3 p-4">
@@ -43,18 +52,24 @@ export function ProjectCard({
             <span className="truncate text-sm text-muted-foreground">
               @{author.username ?? "Unknown"}
             </span>
-            <p className="flex items-center gap-3">
+
+            <div className="flex shrink-0 items-center gap-3">
               {expectedTime && (
-                <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
-                  <Clock3 className="size-4" /> 1h
+                <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Clock3 className="size-4" />
                   {formatExpectedTime(expectedTime)}
                 </span>
               )}
-              <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
-                <Heart className="size-4" />
+
+              <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Heart
+                  className={`size-4 ${
+                    liked ? "fill-current text-primary" : ""
+                  }`}
+                />
                 {likes}
               </span>
-            </p>
+            </div>
           </div>
         </div>
       </Link>

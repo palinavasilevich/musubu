@@ -41,11 +41,28 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound();
   }
 
+  const currentUserId = session?.user?.id ?? null;
+
+  const hasLiked = currentUserId
+    ? await prisma.like.findUnique({
+        where: {
+          userId_projectId: {
+            userId: currentUserId,
+            projectId: id,
+          },
+        },
+        select: {
+          id: true,
+        },
+      })
+    : null;
+
   return (
     <ProjectDetails
       project={project}
       likes={project._count.likes}
       currentUserId={session?.user?.id ?? null}
+      hasLiked={!!hasLiked}
     />
   );
 }

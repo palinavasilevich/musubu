@@ -235,7 +235,11 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps) {
 
             {state?.apiError && <FieldError>{state.apiError}</FieldError>}
 
-            <Button type="submit" disabled={isPending} className="w-fit">
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-full h-12 rounded-2xl btn-squish"
+            >
               {isPending
                 ? isEditMode
                   ? "Saving..."

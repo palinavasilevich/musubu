@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ProjectCard } from "@/components/projects/project-card";
+import { ProjectCard } from "@/components/projects/project-card/project-card";
 import { ROUTES } from "@/shared/constants/routes";
 import { Project } from "@/shared/types/project";
 

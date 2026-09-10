@@ -33,7 +33,7 @@ export function ProjectStatusButton({
       type="button"
       disabled={isPending}
       onClick={handleClick}
-      className="h-12 rounded-2xl px-6 shadow-soft transition-all hover:shadow-lg btn-squish"
+      className="h-12 rounded-2xl px-6 shadow-soft"
     >
       {isPending ? "Updating..." : label}
     </Button>

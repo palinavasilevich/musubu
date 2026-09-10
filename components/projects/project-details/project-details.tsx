@@ -9,10 +9,9 @@ import { formatExpectedTime } from "@/lib/formatTime";
 import { PROJECT_DIFFICULTY_LABELS } from "@/shared/constants/project";
 import { ROUTES } from "@/shared/constants/routes";
 
-import { Button } from "@/components/ui/button";
-
 import { DeleteProjectButton } from "./delete-project-button";
 import { ProjectStatusButton } from "./project-status-button";
+import { ProjectLikeButton } from "./project-like-button";
 
 type ProjectWithDetails = Prisma.ProjectGetPayload<{
   include: {
@@ -30,12 +29,14 @@ interface ProjectDetailsProps {
   project: ProjectWithDetails;
   likes: number;
   currentUserId: string | null;
+  hasLiked: boolean;
 }
 
 export function ProjectDetails({
   project,
   likes,
   currentUserId,
+  hasLiked,
 }: ProjectDetailsProps) {
   const materials = Array.isArray(project.materials)
     ? project.materials.filter(
@@ -125,7 +126,7 @@ export function ProjectDetails({
 
               <Link
                 href={ROUTES.EDIT_PROJECT(project.id)}
-                className="flex h-12 w-fit items-center gap-2 rounded-2xl bg-secondary px-6 text-sm font-medium text-secondary-foreground shadow-soft transition-all hover:bg-secondary/80 hover:shadow-lg btn-squish"
+                className="flex h-12 w-fit items-center gap-2 rounded-2xl bg-secondary px-6 text-sm font-medium text-secondary-foreground shadow-soft transition-all hover:bg-secondary/80"
               >
                 <Pencil className="size-4" />
                 Edit
@@ -136,13 +137,7 @@ export function ProjectDetails({
           )}
 
           {!isOwner && currentUserId && (
-            <Button
-              type="button"
-              className="mt-8 flex w-fit items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-all hover:shadow-lg btn-squish"
-            >
-              <Heart className="size-4" />
-              Like
-            </Button>
+            <ProjectLikeButton projectId={project.id} liked={hasLiked} />
           )}
         </div>
       </section>

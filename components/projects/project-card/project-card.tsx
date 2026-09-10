@@ -7,8 +7,6 @@ import { formatExpectedTime } from "@/lib/formatTime";
 import { ROUTES } from "@/shared/constants/routes";
 import { Project } from "@/shared/types/project";
 
-import { ProjectLikeButton } from "./project-like-button";
-
 export function ProjectCard({
   id,
   title,
@@ -16,7 +14,6 @@ export function ProjectCard({
   author,
   likes,
   liked,
-  canLike,
   expectedTime,
 }: Project) {
   return (

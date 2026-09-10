@@ -6,7 +6,10 @@ import { ArrowLeft, Clock3, Eye, Heart, Pencil, Play } from "lucide-react";
 import type { Prisma } from "@/prisma/generated/client";
 
 import { formatExpectedTime } from "@/lib/formatTime";
-import { PROJECT_DIFFICULTY_LABELS } from "@/shared/constants/project";
+import {
+  PROJECT_DIFFICULTY_CLASSES,
+  PROJECT_DIFFICULTY_LABELS,
+} from "@/shared/constants/project";
 import { ROUTES } from "@/shared/constants/routes";
 
 import { DeleteProjectButton } from "./delete-project-button";
@@ -76,7 +79,11 @@ export function ProjectDetails({
 
         <div className="flex min-w-0 flex-col">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <span className="rounded-full bg-secondary px-4 py-1.5 text-sm font-medium text-secondary-foreground">
+            <span
+              className={`rounded-full px-4 py-1.5 text-sm font-medium ${
+                PROJECT_DIFFICULTY_CLASSES[project.difficulty]
+              }`}
+            >
               {PROJECT_DIFFICULTY_LABELS[project.difficulty]}
             </span>
 

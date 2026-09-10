@@ -73,7 +73,7 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 flex flex-col items-center">
       <input
         ref={inputRef}
         type="file"
@@ -83,14 +83,14 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
       />
 
       {preview ? (
-        <div className="relative overflow-hidden rounded-2xl border border-border/50">
+        <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border/50">
           <div className="relative aspect-video w-full">
             <Image
               src={preview}
               alt="Image preview"
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, 600px"
+              sizes="400px"
             />
           </div>
 
@@ -126,7 +126,7 @@ export function ImageUpload({ value, onChange, onRemove }: ImageUploadProps) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={isUploading}
-          className="flex aspect-video w-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 bg-muted/30 text-muted-foreground transition-colors hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex aspect-video w-full max-w-md flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 bg-muted/30 text-muted-foreground transition-colors hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isUploading ? <Spinner /> : <ImagePlus className="size-5" />}
 

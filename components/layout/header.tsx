@@ -4,6 +4,7 @@ import { Heart, Search, UserIcon } from "lucide-react";
 import Image from "next/image";
 import { User as AuthUser } from "next-auth";
 import { LogoutButton } from "./logout-button";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   user?: AuthUser | null;
@@ -29,7 +30,7 @@ export function Header({ user }: HeaderProps) {
             </Link>
 
             <div className="flex items-center gap-2">
-              {user && (
+              {/* {user && (
                 <>
                   <Link
                     href={ROUTES.PROJECTS}
@@ -47,10 +48,18 @@ export function Header({ user }: HeaderProps) {
                     <Heart size={20} />
                   </Link>
                 </>
-              )}
+              )} */}
 
               {user ? (
                 <>
+                  <Link
+                    href={ROUTES.DASHBOARD}
+                    className={cn(
+                      "px-4 py-2 rounded-2xl text-sm font-medium font-body transition-all duration-300 btn-squish text-foreground/70 hover:text-foreground hover:bg-primary/30",
+                    )}
+                  >
+                    My Projects
+                  </Link>
                   <Link
                     href={ROUTES.DASHBOARD}
                     className="hidden items-center gap-1.5 rounded-2xl bg-secondary px-4 py-2 text-sm text-secondary-foreground transition-all hover:shadow-soft btn-squish sm:flex"

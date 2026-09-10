@@ -4,6 +4,8 @@ import { auth } from "@/auth";
 import { ProjectForm } from "@/components/projects/project-form/project-form";
 import { prisma } from "@/lib/db";
 import { ROUTES } from "@/shared/constants/routes";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 interface ProjectEditPageProps {
   params: Promise<{ id: string }>;
@@ -60,5 +62,16 @@ export default async function ProjectEditPage({
     })),
   };
 
-  return <ProjectForm projectId={project.id} initialData={initialData} />;
+  return (
+    <div className="mx-auto w-full max-w-3xl space-y-6">
+      <Link
+        href={ROUTES.DASHBOARD}
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft size={16} />
+        Back to my projects
+      </Link>
+      <ProjectForm projectId={project.id} initialData={initialData} />
+    </div>
+  );
 }

@@ -19,7 +19,8 @@ export default async function DashboardPage() {
     include: {
       author: {
         select: {
-          name: true,
+          id: true,
+          username: true,
           avatar: true,
         },
       },
@@ -34,7 +35,9 @@ export default async function DashboardPage() {
     },
   });
 
-  const projectCards = projects.map(toProjectCard);
+  const projectCards = projects.map((project) =>
+    toProjectCard(project, session.user.id),
+  );
 
   return (
     <Projects

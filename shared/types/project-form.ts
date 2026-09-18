@@ -1,20 +1,20 @@
-export interface ProjectMaterialForm {
-  materialId: string | null;
-  quantity: string;
-  unit: string;
-}
+import { ProjectDifficulty } from "@/shared/constants/project";
 
-export interface ProjectInstructionForm {
+export interface ProjectInstructionInput {
   title: string;
   content: string;
   image: string;
 }
 
-export interface AvailableMaterial {
-  id: string;
-  name: string;
+export interface ProjectFormInitialData {
+  title: string;
   description: string;
-  image: string | null;
+  image: string;
+  difficulty: ProjectDifficulty;
+  expectedTime: number | null;
+  materials: string[];
+  videoUrl: string;
+  instructions: ProjectInstructionInput[];
 }
 
 export interface ProjectActionState {
@@ -24,8 +24,8 @@ export interface ProjectActionState {
     difficulty?: string;
     expectedTime?: string;
     image?: string;
-    isPublic?: string;
     materials?: string;
+    videoUrl?: string;
     instructions?: string;
   };
   apiError?: string;

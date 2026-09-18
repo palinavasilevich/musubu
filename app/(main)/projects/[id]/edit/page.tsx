@@ -1,15 +1,14 @@
 import { notFound, redirect } from "next/navigation";
 
 import { auth } from "@/auth";
+import { ProjectForm } from "@/components/projects/project-form/project-form";
 import { prisma } from "@/lib/db";
 import { ROUTES } from "@/shared/constants/routes";
-
-import { ProjectForm } from "@/components/projects/project-form";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 interface ProjectEditPageProps {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 }
 
 export default async function ProjectEditPage({
@@ -24,15 +23,8 @@ export default async function ProjectEditPage({
   }
 
   const project = await prisma.project.findUnique({
-    where: {
-      id,
-    },
+    where: { id },
     include: {
-      projectMaterials: {
-        include: {
-          material: true,
-        },
-      },
       instructions: {
         orderBy: {
           order: "asc",
@@ -49,11 +41,11 @@ export default async function ProjectEditPage({
     redirect(ROUTES.PROJECT(project.id));
   }
 
-  const availableMaterials = await prisma.material.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  });
+  const materials = Array.isArray(project.materials)
+    ? project.materials.filter(
+        (material): material is string => typeof material === "string",
+      )
+    : [];
 
   const initialData = {
     title: project.title,
@@ -61,12 +53,8 @@ export default async function ProjectEditPage({
     image: project.image ?? "",
     difficulty: project.difficulty,
     expectedTime: project.expectedTime,
-    isPublic: project.isPublic,
-    materials: project.projectMaterials.map((item) => ({
-      materialId: item.materialId,
-      quantity: item.quantity?.toString() ?? "",
-      unit: item.unit ?? "",
-    })),
+    materials,
+    videoUrl: project.videoUrl ?? "",
     instructions: project.instructions.map((instruction) => ({
       title: instruction.title,
       content: instruction.content,
@@ -75,10 +63,15 @@ export default async function ProjectEditPage({
   };
 
   return (
-    <ProjectForm
-      projectId={project.id}
-      initialData={initialData}
-      availableMaterials={availableMaterials}
-    />
+    <div className="mx-auto w-full max-w-3xl space-y-6">
+      <Link
+        href={ROUTES.DASHBOARD}
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft size={16} />
+        Back to my projects
+      </Link>
+      <ProjectForm projectId={project.id} initialData={initialData} />
+    </div>
   );
 }

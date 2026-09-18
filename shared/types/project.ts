@@ -1,4 +1,3 @@
-import { Prisma } from "@/prisma/generated/client";
 import { Difficulty } from "@/prisma/generated/client";
 
 export interface Project {
@@ -6,29 +5,15 @@ export interface Project {
   title: string;
   image: string | null;
   author: {
-    name: string;
+    username: string;
     avatar?: string | null;
   };
   likes: number;
+  liked: boolean;
+  canLike: boolean;
   description: string;
   views: number;
   difficulty: Difficulty;
   expectedTime?: number;
   createdAt: Date;
 }
-
-export type ProjectWithRelations = Prisma.ProjectGetPayload<{
-  include: {
-    author: {
-      select: {
-        name: true;
-        avatar: true;
-      };
-    };
-    _count: {
-      select: {
-        likes: true;
-      };
-    };
-  };
-}>;

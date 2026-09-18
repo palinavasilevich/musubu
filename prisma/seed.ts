@@ -1,3 +1,5 @@
+import bcrypt from "bcryptjs";
+
 import { PrismaClient, Difficulty, ProjectStatus } from "./generated/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -13,6 +15,30 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
+const users = [
+  {
+    id: "seed-user-1",
+    email: "palina@example.com",
+    password: "password123",
+    username: "pvslvch",
+    avatar: null,
+  },
+  {
+    id: "seed-user-2",
+    email: "anna@example.com",
+    password: "password123",
+    username: "anna",
+    avatar: null,
+  },
+  {
+    id: "seed-user-3",
+    email: "kate@example.com",
+    password: "password123",
+    username: "kate",
+    avatar: null,
+  },
+];
+
 const projects = [
   {
     id: "seed-bunny",
@@ -21,36 +47,17 @@ const projects = [
       "A cute little crochet bunny that makes a lovely handmade gift. A simple amigurumi project for beginners.",
     image: "/images/projects/crochet-bunny.webp",
     difficulty: Difficulty.BEGINNER,
+    status: ProjectStatus.PUBLISHED,
     views: 81,
     createdAt: new Date("2026-08-31"),
-
+    expectedTime: 120,
     materials: [
-      {
-        name: "Cotton yarn",
-        description: "Soft cotton yarn suitable for amigurumi.",
-        quantity: 50,
-        unit: "g",
-      },
-      {
-        name: "Crochet hook",
-        description: "A 3 mm crochet hook.",
-        quantity: 1,
-        unit: "pcs",
-      },
-      {
-        name: "Safety eyes",
-        description: "Small black safety eyes for the bunny.",
-        quantity: 2,
-        unit: "pcs",
-      },
-      {
-        name: "Polyester stuffing",
-        description: "Soft filling for amigurumi toys.",
-        quantity: 30,
-        unit: "g",
-      },
+      "Cotton yarn — 50 g",
+      "3 mm crochet hook",
+      "Safety eyes — 2 pcs",
+      "Polyester stuffing — 30 g",
     ],
-
+    videoUrl: null,
     instructions: [
       {
         order: 1,
@@ -96,57 +103,311 @@ const projects = [
       },
     ],
   },
-
   {
-    id: "seed-sweater",
-    title: "Cozy Autumn Sweater",
+    id: "seed-bear",
+    title: "Tiny Crochet Bear",
     description:
-      "A warm and cozy sweater for chilly autumn days. A simple and comfortable knitting project.",
-    image: "/images/projects/autumn-sweater.webp",
+      "A sweet little amigurumi bear with a simple shape and minimal sewing. Perfect for a first crochet toy.",
+    image: "/images/projects/crochet-bear.webp",
     difficulty: Difficulty.BEGINNER,
-    views: 342,
-    createdAt: new Date("2026-08-28"),
-
+    status: ProjectStatus.PUBLISHED,
+    views: 142,
+    createdAt: new Date("2026-08-29"),
+    expectedTime: 150,
     materials: [
-      {
-        name: "Wool yarn",
-        description: "Warm medium-weight wool yarn.",
-        quantity: 500,
-        unit: "g",
-      },
-      {
-        name: "Knitting needles",
-        description: "Straight or circular knitting needles.",
-        quantity: 1,
-        unit: "set",
-      },
+      "Brown cotton yarn — 60 g",
+      "3 mm crochet hook",
+      "Safety eyes — 2 pcs",
+      "Polyester stuffing",
+      "Yarn needle",
     ],
-
+    videoUrl: null,
     instructions: [
       {
         order: 1,
-        title: "Knit the front",
+        title: "Make the head",
         content:
-          "Cast on the required number of stitches and knit the front panel according to the desired measurements.",
+          "Begin with a magic ring and work single crochet stitches in continuous rounds. Increase gradually to create a rounded head.",
         image: null,
       },
       {
         order: 2,
-        title: "Knit the back",
-        content: "Repeat the same process for the back panel.",
+        title: "Crochet the body",
+        content:
+          "Continue with the body using the same yarn. Keep the tension even to create a smooth amigurumi shape.",
         image: null,
       },
       {
         order: 3,
-        title: "Make the sleeves",
-        content: "Knit two sleeves and shape them gradually toward the cuffs.",
+        title: "Add the details",
+        content:
+          "Attach the eyes and embroider a small nose. Sew the head to the body and secure all yarn ends.",
+        image: null,
+      },
+    ],
+  },
+  {
+    id: "seed-strawberry",
+    title: "Crochet Strawberry",
+    description:
+      "A tiny crochet strawberry that works beautifully as a keychain, decoration or small handmade gift.",
+    image: "/images/projects/crochet-strawberry.jpg",
+    difficulty: Difficulty.BEGINNER,
+    status: ProjectStatus.PUBLISHED,
+    views: 216,
+    createdAt: new Date("2026-08-27"),
+    expectedTime: 60,
+    materials: [
+      "Red cotton yarn — 20 g",
+      "Green cotton yarn — 10 g",
+      "2.5 mm crochet hook",
+      "Polyester stuffing",
+      "Yarn needle",
+    ],
+    videoUrl: null,
+    instructions: [
+      {
+        order: 1,
+        title: "Crochet the strawberry",
+        content:
+          "Work the strawberry from the bottom upward, increasing and decreasing to create its characteristic shape.",
+        image: null,
+      },
+      {
+        order: 2,
+        title: "Add the stuffing",
+        content:
+          "Add a small amount of stuffing before closing the strawberry completely.",
+        image: null,
+      },
+      {
+        order: 3,
+        title: "Make the leaves",
+        content:
+          "Use green yarn to crochet the leafy top and sew it securely to the strawberry.",
+        image: null,
+      },
+    ],
+  },
+  {
+    id: "seed-whale",
+    title: "Mini Crochet Whale",
+    description:
+      "A soft and simple whale amigurumi with a rounded body and tiny fins.",
+    image: "/images/projects/crochet-whale.jpg",
+    difficulty: Difficulty.INTERMEDIATE,
+    status: ProjectStatus.PUBLISHED,
+    views: 178,
+    createdAt: new Date("2026-08-25"),
+    expectedTime: 180,
+    materials: [
+      "Blue cotton yarn — 70 g",
+      "White cotton yarn — 10 g",
+      "3 mm crochet hook",
+      "Safety eyes — 2 pcs",
+      "Polyester stuffing",
+    ],
+    videoUrl: null,
+    instructions: [
+      {
+        order: 1,
+        title: "Crochet the body",
+        content:
+          "Start at the tail and work in continuous rounds, increasing to create the rounded whale body.",
+        image: null,
+      },
+      {
+        order: 2,
+        title: "Make the fins",
+        content:
+          "Crochet two small fins and attach them symmetrically to both sides of the body.",
+        image: null,
+      },
+      {
+        order: 3,
+        title: "Finish the whale",
+        content:
+          "Add the eyes, stuff the body firmly and close the opening with a yarn needle.",
+        image: null,
+      },
+    ],
+  },
+  {
+    id: "seed-cat",
+    title: "Sleepy Crochet Cat",
+    description:
+      "A cozy little cat amigurumi with sleepy eyes and a simple sitting shape.",
+    image: "/images/projects/crochet-cat.jpg",
+    difficulty: Difficulty.INTERMEDIATE,
+    status: ProjectStatus.PUBLISHED,
+    views: 324,
+    createdAt: new Date("2026-08-22"),
+    expectedTime: 240,
+    materials: [
+      "Soft acrylic yarn — 80 g",
+      "3.5 mm crochet hook",
+      "Embroidery thread",
+      "Polyester stuffing",
+      "Yarn needle",
+    ],
+    videoUrl: null,
+    instructions: [
+      {
+        order: 1,
+        title: "Crochet the head",
+        content:
+          "Work the head in continuous rounds and shape the ears by adjusting the stitch increases.",
+        image: null,
+      },
+      {
+        order: 2,
+        title: "Crochet the body",
+        content:
+          "Create the body from the bottom upward and add stuffing gradually as you work.",
+        image: null,
+      },
+      {
+        order: 3,
+        title: "Embroider the face",
+        content:
+          "Use embroidery thread to create sleepy eyes, a nose and small whiskers.",
         image: null,
       },
       {
         order: 4,
-        title: "Assemble the sweater",
+        title: "Assemble the cat",
         content:
-          "Sew the shoulders and sides together, then attach the sleeves.",
+          "Attach the head, tail and any remaining details. Hide all yarn ends securely.",
+        image: null,
+      },
+    ],
+  },
+  {
+    id: "seed-bee",
+    title: "Little Crochet Bee",
+    description:
+      "A cheerful striped bee that is quick to make and perfect as a small handmade decoration.",
+    image: "/images/projects/crochet-bee.webp",
+    difficulty: Difficulty.BEGINNER,
+    status: ProjectStatus.PUBLISHED,
+    views: 267,
+    createdAt: new Date("2026-08-20"),
+    expectedTime: 90,
+    materials: [
+      "Yellow cotton yarn — 30 g",
+      "Black cotton yarn — 20 g",
+      "White yarn — 10 g",
+      "3 mm crochet hook",
+      "Safety eyes — 2 pcs",
+      "Polyester stuffing",
+    ],
+    videoUrl: null,
+    instructions: [
+      {
+        order: 1,
+        title: "Crochet the body",
+        content:
+          "Alternate yellow and black yarn while working the body in continuous rounds.",
+        image: null,
+      },
+      {
+        order: 2,
+        title: "Make the wings",
+        content:
+          "Crochet two small white wings and leave a long tail for sewing.",
+        image: null,
+      },
+      {
+        order: 3,
+        title: "Assemble the bee",
+        content:
+          "Attach the wings and eyes, then embroider a small smile before securing the yarn ends.",
+        image: null,
+      },
+    ],
+  },
+  {
+    id: "seed-turtle",
+    title: "Pocket Crochet Turtle",
+    description:
+      "A small turtle amigurumi with a textured shell and cute little legs.",
+    image: "/images/projects/crochet-turtle.webp",
+    difficulty: Difficulty.INTERMEDIATE,
+    status: ProjectStatus.PUBLISHED,
+    views: 198,
+    createdAt: new Date("2026-08-17"),
+    expectedTime: 210,
+    materials: [
+      "Green cotton yarn — 60 g",
+      "Brown cotton yarn — 30 g",
+      "3 mm crochet hook",
+      "Safety eyes — 2 pcs",
+      "Polyester stuffing",
+    ],
+    videoUrl: null,
+    instructions: [
+      {
+        order: 1,
+        title: "Make the shell",
+        content:
+          "Crochet the shell in rounds and use increases to create a gently domed shape.",
+        image: null,
+      },
+      {
+        order: 2,
+        title: "Crochet the body",
+        content:
+          "Work the head, legs and underside of the turtle separately before joining the pieces.",
+        image: null,
+      },
+      {
+        order: 3,
+        title: "Join the pieces",
+        content:
+          "Sew the body to the shell and make sure all four legs are positioned evenly.",
+        image: null,
+      },
+    ],
+  },
+  {
+    id: "seed-mushroom",
+    title: "Forest Mushroom",
+    description:
+      "A whimsical crochet mushroom inspired by a tiny forest cottage garden.",
+    image: "/images/projects/crochet-mushroom.jpg",
+    difficulty: Difficulty.ADVANCED,
+    status: ProjectStatus.DRAFT,
+    views: 34,
+    createdAt: new Date("2026-09-02"),
+    expectedTime: 300,
+    materials: [
+      "Red cotton yarn — 50 g",
+      "Cream cotton yarn — 40 g",
+      "2.5 mm crochet hook",
+      "Polyester stuffing",
+      "Yarn needle",
+    ],
+    videoUrl: null,
+    instructions: [
+      {
+        order: 1,
+        title: "Crochet the cap",
+        content:
+          "Work the mushroom cap in rounds, increasing evenly to create a wide rounded shape.",
+        image: null,
+      },
+      {
+        order: 2,
+        title: "Crochet the stem",
+        content:
+          "Create the stem separately and stuff it lightly before closing the bottom.",
+        image: null,
+      },
+      {
+        order: 3,
+        title: "Add the spots",
+        content:
+          "Embroider or crochet small cream spots and attach them evenly across the cap.",
         image: null,
       },
     ],
@@ -156,22 +417,36 @@ const projects = [
 async function main() {
   console.log("🌱 Starting seed...");
 
-  const users = await prisma.user.findMany({
-    orderBy: {
-      createdAt: "asc",
-    },
-    take: 3,
-  });
+  const hashedUsers = await Promise.all(
+    users.map(async (user) => ({
+      ...user,
+      password: await bcrypt.hash(user.password, 10),
+    })),
+  );
 
-  if (users.length === 0) {
-    throw new Error(
-      "No users found. Create at least one user before running the seed.",
-    );
+  for (const user of hashedUsers) {
+    await prisma.user.upsert({
+      where: {
+        email: user.email,
+      },
+      update: {
+        username: user.username,
+        avatar: user.avatar,
+      },
+      create: user,
+    });
   }
 
-  console.log(`Found ${users.length} existing user(s).`);
+  console.log(`✓ Created/updated ${hashedUsers.length} user(s)`);
 
-  // Remove previously seeded projects.
+  const seededUsers = await prisma.user.findMany({
+    where: {
+      email: {
+        in: users.map((user) => user.email),
+      },
+    },
+  });
+
   await prisma.project.deleteMany({
     where: {
       id: {
@@ -182,7 +457,7 @@ async function main() {
 
   for (let index = 0; index < projects.length; index++) {
     const projectData = projects[index];
-    const user = users[index % users.length];
+    const user = seededUsers[index % seededUsers.length];
 
     const project = await prisma.project.create({
       data: {
@@ -191,45 +466,23 @@ async function main() {
         description: projectData.description,
         image: projectData.image,
         difficulty: projectData.difficulty,
-        status: ProjectStatus.PUBLISHED,
-        isPublic: true,
+        status: projectData.status,
         views: projectData.views,
         authorId: user.id,
         createdAt: projectData.createdAt,
-
-        projectMaterials: {
-          create: projectData.materials.map((material) => ({
-            quantity: material.quantity,
-            unit: material.unit,
-
-            material: {
-              create: {
-                name: material.name,
-                description: material.description,
-              },
-            },
-          })),
-        },
-
+        materials: projectData.materials,
+        videoUrl: projectData.videoUrl,
         instructions: {
           create: projectData.instructions,
         },
       },
-
       include: {
-        projectMaterials: {
-          include: {
-            material: true,
-          },
-        },
         instructions: true,
       },
     });
 
-    console.log(`✓ ${project.title} → ${user.name ?? user.email}`);
-
-    console.log(`  Materials: ${project.projectMaterials.length}`);
-
+    console.log(`✓ ${project.title} → ${user.username ?? user.email}`);
+    console.log(`  Materials: ${projectData.materials.length}`);
     console.log(`  Instructions: ${project.instructions.length}`);
   }
 

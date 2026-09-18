@@ -75,15 +75,15 @@ export function SignupForm({
                 <InputGroup
                   className={cn(
                     "px-1 h-12 rounded-2xl border-border/50 text-base",
-                    state?.errors?.name &&
+                    state?.errors?.username &&
                       "border-destructive ring-1 ring-destructive/20",
                   )}
-                  aria-invalid={!!state?.errors?.name}
+                  aria-invalid={!!state?.errors?.username}
                 >
                   <InputGroupInput
-                    id="name"
-                    name="name"
-                    placeholder="Your name"
+                    id="username"
+                    name="username"
+                    placeholder="Your username"
                   />
 
                   <InputGroupAddon align="inline-start">
@@ -91,9 +91,9 @@ export function SignupForm({
                   </InputGroupAddon>
                 </InputGroup>
 
-                {state?.errors?.name && (
+                {state?.errors?.username && (
                   <FieldError className="text-center">
-                    {state.errors.name}
+                    {state.errors.username}
                   </FieldError>
                 )}
               </Field>

@@ -2,16 +2,21 @@
 
 import { Plus, Trash2 } from "lucide-react";
 
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
-import { ImageUpload } from "../ui/image-upload";
-import { ProjectInstructionForm } from "@/shared/types/project-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { ProjectInstructionInput } from "@/shared/types/project-form";
 
 interface ProjectInstructionsFieldProps {
-  instructions: ProjectInstructionForm[];
-  onChange: (instructions: ProjectInstructionForm[]) => void;
+  instructions: ProjectInstructionInput[];
+  onChange: (instructions: ProjectInstructionInput[]) => void;
 }
 
 export function ProjectInstructionsField({
@@ -35,7 +40,7 @@ export function ProjectInstructionsField({
 
   const updateInstruction = (
     index: number,
-    field: keyof ProjectInstructionForm,
+    field: keyof ProjectInstructionInput,
     value: string,
   ) => {
     onChange(

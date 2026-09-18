@@ -15,7 +15,7 @@ export default async function MainLayout({ children }: MainLayoutProps) {
     <div className="min-h-svh bg-background">
       <Header user={session?.user} />
 
-      <main className="mx-auto w-full max-w-7xl px-6 pt-28 pb-12 md:px-8">
+      <main className="mx-auto w-full max-w-7xl px-6 pt-28 pb-12 ">
         {children}
       </main>
 

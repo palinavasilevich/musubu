@@ -10,11 +10,11 @@ import { AuthError } from "next-auth";
 
 const signupSchema = z
   .object({
-    name: z
+    username: z
       .string()
       .trim()
-      .min(1, { error: "Name is required" })
-      .max(100, { error: "Name must be at most 100 characters" }),
+      .min(1, { error: "Username is required" })
+      .max(100, { error: "Username must be at most 100 characters" }),
 
     email: z
       .string()
@@ -39,7 +39,7 @@ const signupSchema = z
 export type SignupActionState = {
   apiError?: string;
   errors?: {
-    name?: string;
+    username?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
@@ -51,7 +51,7 @@ export async function signupAction(
   formData: FormData,
 ): Promise<SignupActionState> {
   const parsedFields = signupSchema.safeParse({
-    name: formData.get("name"),
+    username: formData.get("username"),
     email: formData.get("email"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
@@ -68,7 +68,7 @@ export async function signupAction(
     };
   }
 
-  const { name, email, password } = parsedFields.data;
+  const { username, email, password } = parsedFields.data;
 
   try {
     const existingUser = await prisma.user.findUnique({
@@ -85,7 +85,7 @@ export async function signupAction(
 
     await prisma.user.create({
       data: {
-        name,
+        username,
         email,
         password: hashedPassword,
       },

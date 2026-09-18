@@ -34,7 +34,7 @@ export function DeleteProjectButton({ projectId }: DeleteProjectButtonProps) {
       type="button"
       variant="destructive"
       disabled={isPending}
-      className="h-12 w-fit gap-2 rounded-2xl px-6 py-3 text-sm font-medium shadow-soft transition-all btn-squish"
+      className="h-12 w-fit gap-2 rounded-2xl px-6 py-3 text-sm font-medium shadow-soft"
       onClick={handleDelete}
     >
       <Trash2 />
